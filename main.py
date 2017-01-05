@@ -198,8 +198,10 @@ def planes(id_plane=None):
 if __name__ == '__main__' or __name__ == 'main':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/postgres'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/u4kuklewski'
+    if __name__ == '__main__':
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/postgres'
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/u4kuklewski'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     login_manager = LoginManager()
     login_manager.init_app(app)
