@@ -1,4 +1,3 @@
-import flask
 from flask import Flask, render_template
 from flask import abort
 from flask import redirect
@@ -200,6 +199,7 @@ if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/postgres'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/postgres'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     login_manager = LoginManager()
     login_manager.init_app(app)
