@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from sqlalchemy import text
 
-from db_helper import get_dictionary_items, get_db, get_dictionary_item_id, raw_query
+from db_helper import get_dictionary_items, get_db, get_dictionary_item_id, raw_query, get_engine
 
 
 class User(UserMixin):
@@ -26,7 +26,7 @@ class User(UserMixin):
             'id_user': id_user,
             'email': email
         }
-        user_data = get_db().engine.execute(text(query), **args).fetchone()
+        user_data = get_engine().execute(text(query), **args).fetchone()
         if user_data is None:
             return None
 
@@ -50,7 +50,7 @@ class User(UserMixin):
             'id_rank': get_dictionary_item_id('user', 'klient'),
             'id_personal_data': None
         }
-        get_db().engine.execute(text(query), **args)
+        get_engine().execute(text(query), **args)
         return User.get(email=email)
 
     def get_id(self):
@@ -61,7 +61,7 @@ class User(UserMixin):
         args = {
             'id_user': self.get_id()
         }
-        correct_password = str(get_db().engine.execute(text(query), **args).first()[0])
+        correct_password = str(get_engine().execute(text(query), **args).first()[0])
         return correct_password == password
 
 
@@ -83,7 +83,7 @@ class PersonalData(object):
         args = {
             'id_dane_osobowe': id_personal_data
         }
-        data = get_db().engine.execute(text(query), **args).first()
+        data = get_engine().execute(text(query), **args).first()
         if data is None:
             return None
 
@@ -105,7 +105,7 @@ class PersonalData(object):
                 ' VALUES (:personal_number, :fname, :lname, :birth, :nationality, :id_address) ' \
                 ' RETURNING id_dane_osobowe'
         args = personal_data.__dict__
-        id_personal_data = get_db().engine.execute(text(query), **args).fetchone()[0]
+        id_personal_data = get_engine().execute(text(query), **args).fetchone()[0]
         return PersonalData.get(id_personal_data)
 
 
@@ -127,7 +127,7 @@ class Address(object):
         args = {
             'id_adres': id_address
         }
-        data = get_db().engine.execute(text(query), **args).first()
+        data = get_engine().execute(text(query), **args).first()
         if data is None:
             return None
 
@@ -149,7 +149,7 @@ class Address(object):
                 ' VALUES (:country, :city, :street, :street_number, :flat_number, :postal_code) ' \
                 ' RETURNING id_adres '
         args = address.__dict__
-        id_address = get_db().engine.execute(text(query), **args).fetchone()[0]
+        id_address = get_engine().execute(text(query), **args).fetchone()[0]
         return Address.get(id_address)
 
 
@@ -171,7 +171,7 @@ class Flight(object):
         args = {
             'id_lot': id_flight
         }
-        data = get_db().engine.execute(text(query), **args).first()
+        data = get_engine().execute(text(query), **args).first()
         if data is None:
             return None
         f_data = Flight()
@@ -195,7 +195,7 @@ class Flight(object):
                     ' WHERE id_lot=:id_flight RETURNING id_lot '
         args = self.__dict__
         print args
-        id_flight = get_db().engine.execute(text(query), **args).fetchone()[0]
+        id_flight = get_engine().execute(text(query), **args).fetchone()[0]
         return Flight.get(id_flight)
 
 
@@ -218,7 +218,7 @@ class Airport(object):
             'nazwa': name
         }
 
-        data = get_db().engine.execute(text(query), **args).first()
+        data = get_engine().execute(text(query), **args).first()
         if data is None:
             return None
         a_data = Airport()
@@ -235,7 +235,7 @@ class Airport(object):
             query = ' UPDATE lotnisko SET nazwa=:name, id_adres=:id_address WHERE id_lotnisko=:id_airport ' \
                     ' RETURNING id_lotnisko '
         args = self.__dict__
-        id_airport = get_db().engine.execute(text(query), **args).fetchone()[0]
+        id_airport = get_engine().execute(text(query), **args).fetchone()[0]
         return Airport.get(id_airport)
 
 
@@ -256,7 +256,7 @@ class Plane(object):
         args = {
             'id_samolot': id_plane
         }
-        data = get_db().engine.execute(text(query), **args).fetchall()
+        data = get_engine().execute(text(query), **args).fetchall()
         if data is None:
             return None
 
@@ -280,7 +280,7 @@ class Plane(object):
             query = ' UPDATE samolot SET producent=:producer, model=:model WHERE id_samolot=:id_plane ' \
                     ' RETURNING id_samolot '
         args = self.__dict__
-        id_airport = get_db().engine.execute(text(query), **args).fetchone()[0]
+        id_airport = get_engine().execute(text(query), **args).fetchone()[0]
         return Airport.get(id_airport)
 
 

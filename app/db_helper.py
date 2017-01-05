@@ -1,13 +1,22 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 from sqlalchemy import text
 from flask import current_app, g
 
+database_uri = 'postgresql://postgres:postgres@localhost/postgres'
+
+
+# database_uri = 'postgresql://u4kuklewski:4kuklewski@localhost/postgres'
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = SQLAlchemy(current_app)
     return db
+
+
+def get_engine():
+    return create_engine(database_uri)
 
 
 def get_dictionary_items(elements_set):
@@ -31,7 +40,7 @@ def get_dictionary_item_id(elements_set, element):
 
 
 def raw_query(query, args=None):
-    e = get_db().engine
+    e = get_engine()
     if args is None:
         return e.execute(query)
     return e.execute(text(query), **args)
