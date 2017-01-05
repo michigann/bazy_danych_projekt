@@ -195,7 +195,7 @@ def planes(id_plane=None):
     return abort(403)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' or __name__ == 'main':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/postgres'
