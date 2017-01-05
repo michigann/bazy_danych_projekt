@@ -1,0 +1,6 @@
+{% extends 'back_office_views/base.html' %}
+{% from '_formhelpers.html' import render_form %}
+
+{% block content %}
+     {{ render_form(form, action_text='zaloguj', class_='col-lg-6', btn_class='btn btn-success') }}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'customer_views/base.html' %}
+{% from '_formhelpers.html' import render_form, render_field, render_radio_field %}
+
+{% block content %}
+    <form method="POST" action="" role="form" class="center-block col-lg-9">
+        {{ form.hidden_tag() if form.hidden_tag }}
+        {% if caller %}
+            {{ caller() }}
+        {% else %}
+            <div class="pull-left col-lg-4">
+            {{ render_field(form.personal_number) }}
+            {{ render_field(form.fname) }}
+            {{ render_field(form.lname) }}
+            {{ render_field(form.birth) }}
+            {{ render_field(form.nationality) }}
+            </div>
+            <div class="pull-left col-lg-4">
+            {{ render_field(form.country) }}
+            {{ render_field(form.city) }}
+            {{ render_field(form.street) }}
+            {{ render_field(form.street_number) }}
+            {{ render_field(form.flat_number) }}
+            {{ render_field(form.postal_code) }}
+            </div>
+
+            <div class="pull-right col-lg-4">
+                {{ render_radio_field(form.choose_ticket) }}
+            </div>
+
+            <div class="clearfix"></div>
+        {% endif %}
+        <button type="submit" class="btn btn-success">kup bilet</button>
+    </form>
+{% endblock %}

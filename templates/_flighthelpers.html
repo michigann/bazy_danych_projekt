@@ -1,0 +1,74 @@
+{% macro render_list(flights, title_label, empty_label) -%}
+    {% if flights %}
+    <div class="list-group">
+        {{ title_label }}
+        {% for flight in flights %}
+            <a href="{{ url_for('book_ticket', id_flight=flight[0]) }}" class="list-group-item">
+                <span class="badge">{{ flight[6] }} zł</span>
+                <div>
+                    <div>{{ flight[2] }} - {{ flight[3] }}</div>
+                    <div>{{ flight[4] }} - {{ flight[5] }}</div>
+                </div>
+            </a>
+        {% else %}
+            <a href="#" class="list-group-item">{{ empty_label }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+{%- endmacro %}
+
+{% macro render_back_office_flights(flights, title_label, empty_label) -%}
+    {% if flights %}
+    <div class="list-group">
+        {{ title_label }}
+        {% for flight in flights %}
+            <a href="{{ url_for('flights', id_flight=flight[0]) }}" class="list-group-item">
+                <div> id lotu: {{ flight[0] }} </div>
+                <div> nr lotu: {{ flight[1] }} </div>
+                <div>
+                    <div>kierunek: {{ flight[2] }} - {{ flight[3] }}</div>
+                    <div>data: {{ flight[4] }} - {{ flight[5] }}</div>
+                </div>
+            <div> id samolotu: {{ flight[6] }} </div>
+            </a>
+        {% else %}
+            <a href="#" class="list-group-item">{{ empty_label }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro render_back_office_airports(airports, title_label, empty_label) -%}
+    {% if airports %}
+    <div class="list-group">
+        {{ title_label }}
+        {% for airport in airports %}
+            <a href="{{ url_for('airports', id_airport=airport[0]) }}" class="list-group-item">
+                <div> id lotniska: {{ airport[0] }} </div>
+                <div> nazwa lotniska: {{ airport[1] }} </div>
+{#                <div> nazwa lotniska: {{ airport[1] }} </div>#}
+            </a>
+        {% else %}
+            <a href="#" class="list-group-item">{{ empty_label }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+{%- endmacro -%}
+
+{% macro render_back_office_planes(planes, title_label, empty_label) -%}
+    {% if planes %}
+    <div class="list-group">
+        {{ title_label }}
+        {% for plane in planes %}
+            <a href="{{ url_for('planes', id_plane=plane[0]) }}" class="list-group-item">
+                <div> id samolotu: {{ plane[0] }} </div>
+                <div> producent samolotu: {{ plane[1] }} </div>
+                <div> model samolotu: {{ plane[2] }} </div>
+            </a>
+        {% else %}
+            <a href="#" class="list-group-item">{{ empty_label }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+{%- endmacro %}
