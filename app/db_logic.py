@@ -2,7 +2,7 @@ from flask_login import current_user
 from sqlalchemy import text
 from sqlalchemy.engine import ResultProxy
 
-from app.db_helper import raw_query, get_dictionary_items, get_dictionary_item_id, get_db, get_engine
+from app.db_helper import raw_query, get_dictionary_items, get_dictionary_item_id, get_db, get_db_engine
 from app.forms import BookTicketForm, FlightForm
 from app.models import Airport, Address, PersonalData, Flight
 
@@ -95,7 +95,7 @@ def buy_ticket(book_ticket_form):
     id_user = int(current_user.get_id())
 
     try:
-        engine = get_engine()
+        engine = get_db_engine()
         connection = engine.raw_connection()
         cursor = connection.cursor()
         cursor.callproc("kup_bilet", [id_personal_data, id_ticket_price, id_user])

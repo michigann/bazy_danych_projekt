@@ -19,7 +19,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/home/')
 def home():
-    return render_template('customer_views/home.html', current_user=current_user)
+    return render_template('customer_views/home.html')
 
 
 @app.route('/register/', methods=['GET', 'POST'])
@@ -28,7 +28,7 @@ def register():
     if request.method == 'POST' and form.validate():
         User.new(form.email.data, form.password.data)
         return redirect(url_for('login'))
-    return render_template('customer_views/register.html', current_user=current_user, form=form)
+    return render_template('customer_views/register.html', form=form)
 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -37,7 +37,7 @@ def login():
     if request.method == 'POST' and form.validate():
         login_user(form.user)
         return redirect(url_for('home'))
-    return render_template('customer_views/login.html', current_user=current_user, form=form)
+    return render_template('customer_views/login.html', form=form)
 
 
 @app.route("/logout/")
@@ -71,7 +71,7 @@ def book_ticket(id_flight):
     if request.method == 'POST' and form.validate():
         info_id = 2 if buy_ticket(form) else 1
         return redirect(url_for('info', info_id=info_id))
-    return render_template('customer_views/book_ticket.html', current_user=current_user, form=form)
+    return render_template('customer_views/book_ticket.html', form=form)
 
 
 @app.route('/info/<int:info_id>/')
@@ -82,7 +82,7 @@ def info(info_id):
         msg = 'Dziekujemy za zakup biletu!'
     else:
         msg = 'Przepraszamy! Wystapil nieznany nam problem...'
-    return render_template('customer_views/info.html', current_user=current_user, msg=msg)
+    return render_template('customer_views/info.html', msg=msg)
 
 
 @app.route('/search_airport/<search_string>/', methods=['GET', 'POST'])
@@ -90,7 +90,7 @@ def search_airport(search_string):
     args = {'search_string': '%{}%'.format(search_string)}
     query = 'SELECT id_lotnisko, nazwa FROM lotnisko WHERE nazwa LIKE :search_string '
     airports = raw_query(query, args)
-    return render_template('customer_views/search_airport.html', current_user=current_user, airports=airports)
+    return render_template('customer_views/search_airport.html', airports=airports)
 
 
 @app.route('/back_office/')
@@ -98,7 +98,7 @@ def search_airport(search_string):
 @login_required
 def back_office_home():
     if current_user.is_admin:
-        return render_template('back_office_views/base.html', current_user=current_user)
+        return render_template('back_office_views/base.html', current_user)
     return abort(403)
 
 
@@ -108,7 +108,7 @@ def back_office_login():
     if request.method == 'POST' and form.validate():
         login_user(form.user)
         return redirect(url_for('back_office_home'))
-    return render_template('back_office_views/login.html', current_user=current_user, form=form)
+    return render_template('back_office_views/login.html', form=form)
 
 
 @app.route('/back_office/flights/', methods=['GET', 'POST'])
@@ -141,7 +141,7 @@ def flights(id_flight=None):
             form.date_to.data = flight.date_to
             form.id_plane.data = flight.id_plane
 
-        return render_template('back_office_views/flights.html', current_user=current_user, form=form, flights=all_flights, id_flight=id_flight)
+        return render_template('back_office_views/flights.html', form=form, flights=all_flights, id_flight=id_flight)
     return abort(403)
 
 
@@ -166,7 +166,7 @@ def airports(id_airport=None):
             form.name.data = airport.name
             # form.id_address.data = airport.id_address
 
-        return render_template('back_office_views/airports.html', current_user=current_user, form=form, airports=all_airports, id_airport=id_airport)
+        return render_template('back_office_views/airports.html', form=form, airports=all_airports, id_airport=id_airport)
     return abort(403)
 
 
@@ -191,7 +191,7 @@ def planes(id_plane=None):
             form.producer.data = plane.producer
             form.model.data = plane.model
 
-        return render_template('back_office_views/planes.html', current_user=current_user, form=form, planes=all_planes, id_plane=id_plane)
+        return render_template('back_office_views/planes.html', form=form, planes=all_planes, id_plane=id_plane)
     return abort(403)
 
 
