@@ -1,6 +1,6 @@
 $( function() {
 
-    $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd HH:MM:SS' });
+    $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
 
     $(".search")
         .keyup(function () {
@@ -12,4 +12,5 @@ $( function() {
             $this.closest('.search').find('input').val( $this.text());
             $this.parent('ul').html(null);
         });
+
 } );

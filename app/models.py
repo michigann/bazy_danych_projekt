@@ -165,6 +165,17 @@ class Flight(object):
         self.id_plane = None
 
     @staticmethod
+    def new_flight(form):
+        flight = Flight()
+        flight.flight_number = form.flight_number.data
+        flight.id_airport_from = form.id_airport_from.data
+        flight.id_airport_to = form.id_airport_to.data
+        flight.date_from = form.date_from.data
+        flight.date_to = form.date_to.data
+        flight.id_plane = form.id_plane.data
+        return flight
+
+    @staticmethod
     def get(id_flight=None):
         query = ' SELECT id_lot, nr_lot, id_lotnisko_wylot, id_lotnisko_przylot, data_wylot, data_przylot, id_samolot' \
                 ' FROM lot WHERE id_lot=:id_lot '
@@ -207,6 +218,12 @@ class Airport(object):
         self.id_address = None
 
     @staticmethod
+    def new_airport(form):
+        airport = Airport()
+        airport.name = form.name.data
+        return airport
+
+    @staticmethod
     def get(id_airport=None, name=None):
         if id_airport is None and name is None:
             return None
@@ -247,6 +264,13 @@ class Plane(object):
         self.seats = list()
 
     @staticmethod
+    def new_plane(form):
+        plane = Plane()
+        plane.producer = form.producer.data
+        plane.model = form.model.data
+        return plane
+
+    @staticmethod
     def get(id_plane=None):
         query = ' SELECT producent, model, s.id_slownik, element, ilosc FROM samolot ' \
                 ' INNER JOIN samolot_miejsca AS sm ON sm.id_samolot=samolot.id_samolot ' \
@@ -280,12 +304,81 @@ class Plane(object):
             query = ' UPDATE samolot SET producent=:producer, model=:model WHERE id_samolot=:id_plane ' \
                     ' RETURNING id_samolot '
         args = self.__dict__
-        id_airport = get_db_engine().execute(text(query), **args).fetchone()[0]
-        return Airport.get(id_airport)
+        id_plane = get_db_engine().execute(text(query), **args).fetchone()[0]
+        if self.id_plane is None:
+            query = ' INSERT INTO samolot_miejsca (id_slownik, id_samolot, ilosc) VALUES (:id_slownik, :id_samolot, :ilosc) ' \
+                    ' RETURNING samolot_miejsca '
+        else:
+            query = ' UPDATE samolot_miejsca SET ilosc=:ilosc WHERE id_slownik=:id_slownik AND id_samolot=:id_samolot ' \
+                    ' RETURNING samolot_miejsca '
+        for seat in self.seats:
+            args = {
+                'id_slownik': seat['id_slownik'],
+                'id_samolot': id_plane,
+                'ilosc': seat['ilosc']
+            }
+            get_db_engine().execute(text(query), **args)
+        return Plane.get(id_plane)
 
 
 class Price(object):
-    pass
+
+    def __init__(self):
+        self.id_price = None
+        self.id_flight = None
+        self.id_class = None
+        self.price = None
+        self.amount = None
+        self.bought = None
+        self.date_from = None
+        self.date_to = None
+        self.available = None
+
+    @staticmethod
+    def new_price(form):
+        price = Price()
+        price.id_class = form.id_class.data[0]
+        price.price = form.price.data
+        price.amount = form.amount.data
+        price.date_from = form.date_from.data
+        price.date_to = form.date_to.data
+        price.available = 1 if form.available.data else 0
+        return price
+
+    @staticmethod
+    def get(id_price=None):
+        query = ' SELECT id_lot, id_klasa, cena, ilosc, kupione, data_od, data_do, dostepny FROM bilet_cennik '
+        if id_price is not None:
+            query += ' WHERE id_bilet_cennik=:id_bilet_cennik '
+        args = {
+            'id_bilet_cennik': id_price
+        }
+        data = get_db_engine().execute(text(query), **args).first()
+        if data is None:
+            return None
+        p_data = Price()
+        p_data.id_price = id_price
+        p_data.id_flight = data[0]
+        p_data.id_class = data[1]
+        p_data.price = data[2]
+        p_data.amount = data[3]
+        p_data.bought = data[4]
+        p_data.date_from = data[5]
+        p_data.date_to = data[6]
+        p_data.available = data[7]
+        return p_data
+
+    def save(self):
+        if self.id_price is None:
+            query = ' INSERT INTO bilet_cennik (id_lot, id_klasa, cena, ilosc, kupione, data_od, data_do, dostepny) ' \
+                    ' VALUES (:id_flight, :id_class, :price, :amount, 0, :date_from, :date_to, :available) ' \
+                    ' RETURNING id_bilet_cennik '
+        else:
+            query = ' UPDATE bilet_cennik SET cena=:price, ilosc=:amount, data_od=:date_from, data_do=:date_to, dostepny=:available ' \
+                    ' WHERE id_bilet_cennik=:id_price RETURNING id_bilet_cennik '
+        args = self.__dict__
+        id_price = get_db_engine().execute(text(query), **args).fetchone()[0]
+        return Price.get(id_price)
 
 
 class PersonTicket(object):

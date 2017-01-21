@@ -1,0 +1,32 @@
+{% extends 'customer_views/base.html' %}
+{% from '_flighthelpers.html' import render_list %}
+
+{% block content %}
+    <div class="list-group">
+        <div class="panel-heading">zbliżające się loty:</div>
+        {% for ticket in future_tickets %}
+            <a href="#"
+               class="list-group-item">
+            <div>osoba: {{ ticket[3] }} {{ ticket[4] }}</div>
+            <div>kierunekt: {{ ticket[5] }} - {{ ticket[6] }}</div>
+            <div>data: {{ ticket[7] }} - {{ ticket[8] }}</div>
+            </a>
+        {% else %}
+            <a href="#" class="list-group-item"> brak </a>
+        {% endfor %}
+    </div>
+
+    <div class="list-group">
+        <div class="panel-heading">odbyte loty:</div>
+        {% for ticket in past_tickets %}
+            <a href="#"
+               class="list-group-item">
+            <div>osoba: {{ ticket[3] }} {{ ticket[4] }}</div>
+            <div>kierunekt: {{ ticket[5] }} - {{ ticket[6] }}</div>
+            <div>data: {{ ticket[7] }} - {{ ticket[8] }}</div>
+            </a>
+        {% else %}
+            <a href="#" class="list-group-item"> brak </a>
+        {% endfor %}
+    </div>
+{% endblock %}

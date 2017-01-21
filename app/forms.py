@@ -1,4 +1,5 @@
-from wtforms import Form, StringField, PasswordField, validators, DateField, IntegerField, SelectMultipleField
+from wtforms import Form, StringField, PasswordField, validators, DateField, IntegerField, SelectMultipleField, \
+    BooleanField, FieldList, DateTimeField
 from wtforms.widgets import ListWidget, RadioInput
 
 from app.db_helper import get_dictionary_item_id
@@ -112,6 +113,11 @@ class MultiRadioField(SelectMultipleField):
     option_widget = RadioInput()
 
 
+class MultiIntegerField(SelectMultipleField):
+    widget = ListWidget()
+    option_widget = IntegerField()
+
+
 class BookTicketForm(PersonalDataForm):
     choose_ticket = MultiRadioField('wybierz bilet', validators=[validators.DataRequired()], coerce=int)
 
@@ -134,30 +140,32 @@ class FlightForm(Form):
     ])
     id_airport_from = IntegerField('id lotniska wylotu', [validators.DataRequired()])
     id_airport_to = StringField('id lotniska przylotu', [validators.DataRequired()])
-    date_from = DateField('data wylotu', [validators.DataRequired()], format='%Y-%m-%d %H:%M:%S')
-    date_to = DateField('data przylotu', [validators.DataRequired()], format='%Y-%m-%d %H:%M:%S')
+    date_from = DateTimeField('data wylotu', [validators.DataRequired()])
+    date_to = DateTimeField('data przylotu', [validators.DataRequired()])
     id_plane = IntegerField('id samolotu', [validators.DataRequired()])
 
     def validate(self):
         if not Form.validate(self):
             return False
+        flag = True
         if self.id_airport_from == self.id_airport_to:
             self.id_airport_from.errors.append('id musza byc inne')
             self.id_airport_to.errors.append('id musza byc inne')
-            return False
+            flag = False
         if Airport.get(id_airport=self.id_airport_from.data) is None:
             self.id_airport_from.errors.append('niepoprawny id lotniska wylotu')
-            return False
+            flag = False
         if Airport.get(id_airport=self.id_airport_to.data) is None:
             self.id_airport_to.errors.append('niepoprawny id lotniska przylotu')
-            return False
+            flag = False
         if self.date_from.data >= self.date_to.data:
             self.date_from.errors.append('data wylotu >= data przylotu')
             self.date_to.errors.append('data wylotu >= data przylotu')
+            flag = False
         if Plane.get(self.id_plane.data) is None:
             self.id_plane.errors.append('niepoprawny id samolotu')
-            return False
-        return True
+            flag = False
+        return flag
 
 
 class AirportForm(Form):
@@ -185,3 +193,26 @@ class PlaneForm(Form):
         validators.Length(max=30)
     ])
 
+    @classmethod
+    def append_field(cls, name, field):
+        setattr(cls, name, field)
+        return cls
+
+
+class PriceForm(Form):
+    id_class = MultiRadioField('klasa', validators=[validators.DataRequired()], coerce=int)
+    price = IntegerField('cena', [validators.DataRequired()])
+    amount = IntegerField('ilosc', [validators.DataRequired()])
+    date_from = DateField('data od', [validators.DataRequired()])
+    date_to = DateField('data od', [validators.DataRequired()])
+    available = BooleanField('dostepny', default=True)
+
+    def validate(self):
+        if not Form.validate(self):
+            return False
+        flag = True
+        if self.date_from.data >= self.date_to.data:
+            self.date_from.errors.append('data od >= data do')
+            self.date_to.errors.append('data od >= data do')
+            flag = False
+        return flag

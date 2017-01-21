@@ -2,16 +2,20 @@ from flask import Flask, render_template
 from flask import abort
 from flask import redirect
 from flask import request
+from flask import session
 from flask import url_for
 from flask_login import current_user
 from flask_login import LoginManager, login_required, logout_user, login_user
+from wtforms import IntegerField
+from wtforms import validators
 
-from app.db_helper import raw_query
-from app.db_logic import select_flights, select_ticket_list, buy_ticket, select_flight_back_office, save_flight, \
-    select_airport_back_office, select_planes_back_office
+from app.db_helper import raw_query, get_dictionary_items
+from app.db_logic import select_flights, select_ticket_list, buy_ticket, select_flight_back_office, \
+    select_airport_back_office, select_planes_back_office, select_cheapest_flights, select_price_list, \
+    select_user_tickets, generate_report
 from app.forms import RegistrationForm, LoginForm, SearchForm, BookTicketForm, FlightForm, BackOfficeLoginForm, \
-    AirportForm, PlaneForm
-from app.models import User, Flight, Airport, Plane
+    AirportForm, PlaneForm, PriceForm
+from app.models import User, Flight, Airport, Plane, Price
 
 app = Flask(__name__)
 
@@ -19,7 +23,10 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/home/')
 def home():
-    return render_template('customer_views/home.html')
+    args = {
+        'flights': select_cheapest_flights()
+    }
+    return render_template('customer_views/home.html', **args)
 
 
 @app.route('/register/', methods=['GET', 'POST'])
@@ -36,7 +43,7 @@ def login():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         login_user(form.user)
-        return redirect(url_for('home'))
+        return redirect(request.args.get('next') or url_for('home'))
     return render_template('customer_views/login.html', form=form)
 
 
@@ -59,7 +66,6 @@ def search_flight():
     }
     if request.method == 'POST' and form.validate():
         args['flights'], args['prev_flights'], args['next_flights'] = select_flights(form)
-
     return render_template('customer_views/search.html', **args)
 
 
@@ -72,6 +78,14 @@ def book_ticket(id_flight):
         info_id = 2 if buy_ticket(form) else 1
         return redirect(url_for('info', info_id=info_id))
     return render_template('customer_views/book_ticket.html', form=form)
+
+
+@app.route('/my_tickets/<int:id_personal_data>/<int:id_price>', methods=['GET', 'POST'])
+@app.route('/my_tickets/', methods=['GET', 'POST'])
+@login_required
+def my_tickets(id_personal_data=None, id_price=None):
+    future_tickets, past_tickets = select_user_tickets(int(session['user_id']))
+    return render_template('customer_views/my_tickets.html', future_tickets=future_tickets, past_tickets=past_tickets)
 
 
 @app.route('/info/<int:info_id>/')
@@ -98,7 +112,7 @@ def search_airport(search_string):
 @login_required
 def back_office_home():
     if current_user.is_admin:
-        return render_template('back_office_views/base.html', current_user)
+        return render_template('back_office_views/base.html')
     return abort(403)
 
 
@@ -111,88 +125,137 @@ def back_office_login():
     return render_template('back_office_views/login.html', form=form)
 
 
-@app.route('/back_office/flights/', methods=['GET', 'POST'])
-@app.route('/back_office/flights/<int:id_flight>/', methods=['GET', 'POST'])
-@login_required
-def flights(id_flight=None):
-    if current_user.is_admin:
-        all_flights = select_flight_back_office()
-        form = FlightForm(request.form)
-
-        if request.method == 'POST' and form.validate():
-            flight = Flight()
-            flight.id_flight = id_flight
-            flight.flight_number = form.flight_number.data
-            flight.id_airport_from = form.id_airport_from.data
-            flight.id_airport_to = form.id_airport_to.data
-            flight.date_from = form.date_from.data
-            flight.date_to = form.date_from.data
-            flight.id_plane = form.id_plane.data
-            saved_flight = flight.save()
-            if saved_flight is not None:
-                return redirect(url_for('flights'))
-
-        flight = None if id_flight is None else Flight.get(id_flight)
-        if flight is not None:
-            form.flight_number.data = flight.flight_number
-            form.id_airport_from.data = flight.id_airport_from
-            form.id_airport_to.data = flight.id_airport_to
-            form.date_from.data = flight.date_from
-            form.date_to.data = flight.date_to
-            form.id_plane.data = flight.id_plane
-
-        return render_template('back_office_views/flights.html', form=form, flights=all_flights, id_flight=id_flight)
-    return abort(403)
-
-
 @app.route('/back_office/airports/', methods=['GET', 'POST'])
 @app.route('/back_office/airports/<int:id_airport>/', methods=['GET', 'POST'])
 @login_required
 def airports(id_airport=None):
-    if current_user.is_admin:
-        all_airports = select_airport_back_office()
-        form = AirportForm(request.form)
-        if request.method == 'POST' and form.validate():
-            airport = Airport()
-            airport.id_airport = id_airport
-            airport.name = form.name.data
-            # airport.id_address = form.id_airport_from.data
-            saved_airport = airport.save()
-            if saved_airport is not None:
-                return redirect(url_for('airports'))
-
-        airport = None if id_airport is None else Airport.get(id_airport)
-        if airport is not None:
-            form.name.data = airport.name
-            # form.id_address.data = airport.id_address
-
-        return render_template('back_office_views/airports.html', form=form, airports=all_airports, id_airport=id_airport)
-    return abort(403)
+    if not current_user.is_admin:
+        return abort(403)
+    all_airports = select_airport_back_office()
+    form = AirportForm(request.form)
+    if request.method == 'POST' and form.validate():
+        airport = Airport.new_airport(form)
+        airport.id_airport = id_airport
+        # airport.id_address = form.id_airport_from.data
+        saved_airport = airport.save()
+        if saved_airport is not None:
+            return redirect(url_for('airports'))
+    airport = None if id_airport is None else Airport.get(id_airport)
+    if airport is not None:
+        form.name.data = airport.name
+        # form.id_address.data = airport.id_address
+    return render_template('back_office_views/airports.html', form=form, airports=all_airports, id_airport=id_airport)
 
 
 @app.route('/back_office/planes/', methods=['GET', 'POST'])
-@app.route('/back_office/planes/<int:id_plane>/', methods=['GET', 'POST'])
 @login_required
-def planes(id_plane=None):
-    if current_user.is_admin:
-        all_planes = select_planes_back_office()
-        form = PlaneForm(request.form)
-        if request.method == 'POST' and form.validate():
-            plane = Plane()
-            plane.id_plane = id_plane
-            plane.producer = form.producer.data
-            plane.model = form.model.data
-            saved_plane = plane.save()
-            if saved_plane is not None:
-                return redirect(url_for('planes'))
+def planes():
+    if not current_user.is_admin:
+        return abort(403)
+    all_planes = select_planes_back_office()
+    for name_item, id_item in get_dictionary_items('klasa').iteritems():
+        PlaneForm.append_field(name_item, IntegerField(name_item, validators=[validators.DataRequired()]))
+    form = PlaneForm(request.form)
+    if request.method == 'POST' and form.validate():
+        plane = Plane.new_plane(form)
+        for name_item, id_item in get_dictionary_items('klasa').iteritems():
+            plane.seats.append({
+                'ilosc': getattr(form, name_item).data,
+                'element': name_item,
+                'id_slownik': id_item
+            })
+        saved_plane = plane.save()
+        if saved_plane is not None:
+            return redirect(url_for('planes'))
 
-        plane = None if id_plane is None else Plane.get(id_plane)
-        if plane is not None:
-            form.producer.data = plane.producer
-            form.model.data = plane.model
+    return render_template('back_office_views/planes.html', form=form, planes=all_planes)
 
-        return render_template('back_office_views/planes.html', form=form, planes=all_planes, id_plane=id_plane)
-    return abort(403)
+
+@app.route('/back_office/flights/', methods=['GET', 'POST'])
+@app.route('/back_office/flights/<int:id_flight>/', methods=['GET', 'POST'])
+@login_required
+def flights(id_flight=None):
+    if not current_user.is_admin:
+        return abort(403)
+    all_flights = select_flight_back_office()
+    form = FlightForm(request.form)
+    if request.method == 'POST' and form.validate():
+        flight = Flight.new_flight(form)
+        flight.id_flight = id_flight
+        saved_flight = flight.save()
+        if saved_flight is not None:
+            return redirect(url_for('price_list', id_flight=saved_flight.id_flight))
+
+    flight = None if id_flight is None else Flight.get(id_flight)
+    if flight is not None:
+        form.flight_number.data = flight.flight_number
+        form.id_airport_from.data = flight.id_airport_from
+        form.id_airport_to.data = flight.id_airport_to
+        form.date_from.data = flight.date_from
+        form.date_to.data = flight.date_to
+        form.id_plane.data = flight.id_plane
+
+    return render_template('back_office_views/flights.html', form=form, flights=all_flights, id_flight=id_flight)
+
+
+@app.route('/back_office/price_list/flights/<int:id_flight>/', methods=['GET', 'POST'])
+@app.route('/back_office/price_list/', methods=['GET', 'POST'])
+@login_required
+def price_list(id_flight=None):
+    if not current_user.is_admin:
+        return abort(403)
+
+    form = PriceForm(request.form)
+    form.id_class.choices = list()
+    for name_item, id_item in get_dictionary_items('klasa').iteritems():
+        form.id_class.choices.append((id_item, name_item))
+
+    if request.method == 'POST' and form.validate():
+        price = Price.new_price(form)
+        price.id_flight = id_flight
+        saved_price = price.save()
+        if saved_price is not None:
+            return redirect(url_for('price_list', id_flight=id_flight))
+
+    flight = Flight.get(id_flight)
+
+    # form.id_class.data = [4]
+    all_flights = None
+    all_prices = list()
+    if flight is None:
+        all_flights = select_flight_back_office()
+    else:
+        for class_name, class_id in get_dictionary_items('klasa').iteritems():
+            all_prices.append((class_name, select_price_list(id_flight, class_id)))
+    args = {
+        'form': form,
+        'flight': flight,
+        'all_prices': all_prices,
+        'all_flights': all_flights
+    }
+    print args
+    return render_template('back_office_views/price_list.html', **args)
+
+
+@app.route('/back_office/price_list/set_available/<int:id_flight>/<int:id_price>/', methods=['GET', 'POST'])
+@login_required
+def set_price_available(id_flight, id_price):
+    if not current_user.is_admin:
+        return abort(403)
+    price = Price.get(id_price)
+    price.available = 1 if price.available == 0 else 0
+    price.save()
+    return redirect(url_for('price_list', id_flight=id_flight))
+
+
+@app.route('/back_office/reports/<string:report>/', methods=['GET', 'POST'])
+@app.route('/back_office/reports/', methods=['GET', 'POST'])
+@login_required
+def reports(report=None):
+    if not current_user.is_admin:
+        return abort(403)
+    report_list = generate_report(report)
+    return render_template('back_office_views/reports.html', report_list=report_list)
 
 
 if __name__ == '__main__' or __name__ == 'main':

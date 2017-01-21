@@ -1,0 +1,32 @@
+{% extends 'back_office_views/base.html' %}
+{% from '_formhelpers.html' import render_form, render_radio_field, render_field %}
+{% from '_flighthelpers.html' import render_back_office_flights %}
+{% from '_flighthelpers.html' import render_back_office_price_list %}
+
+{% block content %}
+    {% if flight %}
+        <div class="col-lg-4 pull-right">
+            {{ render_form(form, btn_class='btn btn-success') }}
+        </div>
+
+        <h4>Edycja cen biletów dla lotu.</h4>
+        <div>
+            <div>id lotu: {{ flight.id_flight }}</div>
+            <div>nr lotu: {{ flight.flight_number }}</div>
+        </div>
+        <div>
+
+            <div class="col-lg-4" style="margin-top: 20px">
+                {% for class_price_list in all_prices %}
+                    {{ render_back_office_price_list(class_price_list[1], class_price_list[0], 'brak zdefiniowanych cen') }}
+                {% endfor %}
+            </div>
+
+        </div>
+    {% else %}
+        <div class="col-lg-5">
+            {{ render_back_office_flights(all_flights, url='price_list') }}
+        </div>
+    {% endif %}
+
+{% endblock %}

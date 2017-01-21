@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %} {% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap.min.css') }}" >
     <script src="{{ url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/back_office_utlis.js') }}"></script>
+
 </head>
 <body>
 
@@ -16,6 +18,12 @@
             <li><a href="{{ url_for('airports') }}">lotniska</a></li>
             <li><a href="{{ url_for('planes') }}">samoloty</a></li>
             <li><a href="{{ url_for('flights') }}">loty</a></li>
+            {% if id_flight %}
+                <li><a href="{{ url_for('price_list', id_flight=id_flight) }}">ceny biletow</a></li>
+            {% else %}
+                <li><a href="{{ url_for('price_list') }}">ceny biletow</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('reports') }}">raporty</a></li>
             {% block menu %} {% endblock %}
         </ul>
         <ul class="nav navbar-nav navbar-right">

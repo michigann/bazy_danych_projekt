@@ -17,27 +17,6 @@
     {% endif %}
 {%- endmacro %}
 
-{% macro render_back_office_flights(flights, title_label, empty_label) -%}
-    {% if flights %}
-    <div class="list-group">
-        {{ title_label }}
-        {% for flight in flights %}
-            <a href="{{ url_for('flights', id_flight=flight[0]) }}" class="list-group-item">
-                <div> id lotu: {{ flight[0] }} </div>
-                <div> nr lotu: {{ flight[1] }} </div>
-                <div>
-                    <div>kierunek: {{ flight[2] }} - {{ flight[3] }}</div>
-                    <div>data: {{ flight[4] }} - {{ flight[5] }}</div>
-                </div>
-            <div> id samolotu: {{ flight[6] }} </div>
-            </a>
-        {% else %}
-            <a href="#" class="list-group-item">{{ empty_label }}</a>
-        {% endfor %}
-    </div>
-    {% endif %}
-{%- endmacro %}
-
 
 {% macro render_back_office_airports(airports, title_label, empty_label) -%}
     {% if airports %}
@@ -58,17 +37,79 @@
 
 {% macro render_back_office_planes(planes, title_label, empty_label) -%}
     {% if planes %}
-    <div class="list-group">
+    <ul class="list-group">
         {{ title_label }}
         {% for plane in planes %}
-            <a href="{{ url_for('planes', id_plane=plane[0]) }}" class="list-group-item">
-                <div> id samolotu: {{ plane[0] }} </div>
-                <div> producent samolotu: {{ plane[1] }} </div>
-                <div> model samolotu: {{ plane[2] }} </div>
+            <li class="list-group-item">
+                <div> id samolotu: {{ plane.id_plane }} </div>
+                <div> producent samolotu: {{ plane.producer }} </div>
+                <div> model samolotu: {{ plane.model }} </div>
+{#                            p_data.seats.append({#}
+{#                'id_slownik': row[2],#}
+{#                'element': row[3],#}
+{#                'ilosc': row[4]#}
+{#            })#}
+                <div>miejsca:
+                    {% for seat in plane.seats %}
+                        <div>{{ seat['element'] }}: {{ seat['ilosc'] }}</div>
+                    {% endfor %}
+                </div>
+            </li>
+        {% else %}
+            <li href="#" class="list-group-item">{{ empty_label }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro render_back_office_flights(flights, title_label, empty_label, url='flights') -%}
+    {% if flights %}
+    <div class="list-group">
+        {{ title_label }}
+        {% for flight in flights %}
+            <a href="{{ url_for(url, id_flight=flight[0]) }}" class="list-group-item">
+                <div> id lotu: {{ flight[0] }} </div>
+                <div> nr lotu: {{ flight[1] }} </div>
+                <div>
+                    <div>kierunek: {{ flight[2] }} - {{ flight[3] }}</div>
+                    <div>data: {{ flight[4] }} - {{ flight[5] }}</div>
+                </div>
+                <div> id samolotu: {{ flight[6] }} </div>
+                <div> dostępne: {{ flight[7] }}/{{ flight[8] }}</div>
             </a>
         {% else %}
             <a href="#" class="list-group-item">{{ empty_label }}</a>
         {% endfor %}
     </div>
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro render_back_office_price_list(price_list, title_label, empty_label) -%}
+    {% if price_list %}
+    <ul class="list-group">
+        {{ title_label }}:
+        {% for price in price_list %}
+            <li class="list-group-item">
+                <div>cena: {{ price[3] }}</div>
+                <div>ilosc: {{ price[4] }}</div>
+                <div>kupione: {{ price[5] }}</div>
+                <div>data: {{ price[6] }} - {{ price[7] }}</div>
+                <form id="available_{{ price[0] }}"
+                      method="POST"
+                      action="{{ url_for('set_price_available', id_flight=price[1], id_price=price[0]) }}">
+                    dostepnosc:
+                    <input
+                           name="is_available"
+                           type="checkbox"
+                           class="available_"
+                           {% if price[8] == 1 %} checked {% endif %} >
+                </form>
+            </li>
+        {% else %}
+            <a href="#" class="list-group-item">{{ empty_label }}</a>
+        {% endfor %}
+    </ul>
     {% endif %}
 {%- endmacro %}

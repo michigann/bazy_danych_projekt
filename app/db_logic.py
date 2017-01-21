@@ -4,7 +4,7 @@ from sqlalchemy.engine import ResultProxy
 
 from app.db_helper import raw_query, get_dictionary_items, get_dictionary_item_id, get_db, get_db_engine
 from app.forms import BookTicketForm, FlightForm
-from app.models import Airport, Address, PersonalData, Flight
+from app.models import Airport, Address, PersonalData, Flight, Plane
 
 
 def select_flights(search_form):
@@ -23,12 +23,7 @@ def select_flights(search_form):
 
     flight_date, search_date = "to_char(data_wylot, 'YYYY-MM-DD')", "to_char(:data_wylot, 'YYYY-MM-DD')"
 
-    id_class = get_dictionary_item_id('klasa', 'economy')
-
-    query = 'SELECT id_lot, nr_lot, lw.nazwa, lp.nazwa, data_wylot, data_przylot, (SELECT _cena FROM obecna_cena(id_lot, {})) FROM lot ' \
-            'INNER JOIN lotnisko AS lw ON id_lotnisko_wylot=lw.id_lotnisko ' \
-            'INNER JOIN lotnisko AS lp ON id_lotnisko_przylot=lp.id_lotnisko WHERE data_wylot>=CURRENT_TIMESTAMP AND ' \
-            ''.format(id_class)
+    query = ' SELECT * FROM loty_klient WHERE '
     order_by = ' ORDER BY data_wylot '
 
     where_date = " {}={} ".format(flight_date, search_date)
@@ -43,18 +38,35 @@ def select_flights(search_form):
     return current_flights, prev_flights, next_flights
 
 
+def select_cheapest_flights(limit=10):
+    return raw_query(' SELECT * FROM loty_klient ORDER BY cena LIMIT {} '.format(limit))
+
+
 def select_ticket_list(id_flight):
     out = list()
     for name_item, id_item in get_dictionary_items('klasa').iteritems():
-        price = raw_query("SELECT _id_bilet_cennik, _cena FROM obecna_cena({}, {})".format(id_flight, id_item)).first()
-        out.append((int(price[0]), 'klasa {} {} zl'.format(name_item, price[1])))
+        try:
+            price = raw_query("SELECT _id_bilet_cennik, _cena FROM obecna_cena({}, {})".format(id_flight, id_item)).first()
+            out.append((int(price[0]), 'klasa {} {} zl'.format(name_item, price[1])))
+        except TypeError:
+            pass
     return out
 
 
+def select_user_tickets(id_user):
+    args = {
+        'id_uzytkownik': id_user
+    }
+    query = ' SELECT * FROM kupione_bilety WHERE id_uzytkownik=:id_uzytkownik ' \
+            ' AND data_wylot {} CURRENT_TIMESTAMP ORDER BY data_wylot DESC '
+    future_flights = raw_query(query.format('>'), args).fetchall()
+    past_flights = raw_query(query.format('<='), args).fetchall()
+    return future_flights, past_flights
+
+
 def select_flight_back_office():
-    query = 'SELECT id_lot, nr_lot, lw.nazwa, lp.nazwa, data_wylot, data_przylot, id_samolot FROM lot ' \
-            'INNER JOIN lotnisko AS lw ON id_lotnisko_wylot=lw.id_lotnisko ' \
-            'INNER JOIN lotnisko AS lp ON id_lotnisko_przylot=lp.id_lotnisko ORDER BY data_wylot '
+    query = ' SELECT id_lot, nr_lot, lotnisko_wylot, lotnisko_przylot, data_wylot, data_przylot, id_samolot, ' \
+            ' miejsca_wolne, miejsca_wszystkie FROM loty_backoffice '
     return raw_query(query).fetchall()
 
 
@@ -64,8 +76,31 @@ def select_airport_back_office():
 
 
 def select_planes_back_office():
-    query = ' SELECT id_samolot, producent, model FROM samolot ORDER BY producent, samolot '
-    return raw_query(query).fetchall()
+    query = ' SELECT id_samolot FROM samolot ORDER BY producent, samolot '
+    select = raw_query(query).fetchall()
+    planes = list()
+    for row in select:
+        planes.append(Plane.get(row[0]))
+    return planes
+
+
+def select_price_list(flight_id, class_id):
+    query = ' SELECT id_bilet_cennik, id_lot, id_klasa, cena, ilosc, kupione, data_od, data_do, dostepny FROM bilet_cennik ' \
+            ' WHERE id_lot=:id_lot AND id_klasa=:id_klasa ORDER BY data_od, data_do '
+    args = {
+        'id_lot': flight_id,
+        'id_klasa': class_id
+    }
+    return raw_query(query, args)
+
+
+def generate_report(report):
+    if report != 'day' and report != 'week' and report != 'month' and report != 'year':
+        return None
+    query = " SELECT date_trunc('{}', data_zakupu), COUNT(*) AS ilosc, SUM(bc.cena) AS dochod, AVG(bc.cena) AS srednia_cena " \
+            " FROM bilet_cennik AS bc INNER JOIN bilet_osoba AS bo ON bo.id_bilet_cennik=bc.id_bilet_cennik " \
+            " GROUP BY CUBE (1) ORDER BY 1 ".format(report)
+    return raw_query(query)
 
 
 def buy_ticket(book_ticket_form):
@@ -105,16 +140,3 @@ def buy_ticket(book_ticket_form):
         return False
     return True
 
-
-def save_flight(flight_form, id_flight=None):
-    if not isinstance(flight_form, FlightForm):
-        return None
-    flight = Flight()
-    flight.id_flight = id_flight
-    flight.flight_number = flight_form.flight_number.data
-    flight.id_airport_from = flight_form.id_airport_from.data
-    flight.id_airport_to = flight_form.id_airport_to.data
-    flight.date_from = flight_form.date_from.data
-    flight.date_to = flight_form.date_from.data
-    flight.id_plane = flight_form.id_plane.data
-    return flight.save()

@@ -1,0 +1,15 @@
+{% extends 'back_office_views/base.html' %}
+
+{% block content %}
+    <div class="page-header">
+        raporty:
+    </div>
+    <div class="list-group dl-horizontal">
+        <a href="{{ url_for('reports', report='day') }}" class="list-group-item">dzienny</a>
+        <a href="{{ url_for('reports', report='week') }}" class="list-group-item">tygodniowy</a>
+        <a href="{{ url_for('reports', report='month') }}" class="list-group-item">miesięczny</a>
+        <a href="{{ url_for('reports', report='year') }}" class="list-group-item">roczny</a>
+    </div>
+
+
+{% endblock %}

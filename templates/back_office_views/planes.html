@@ -2,12 +2,6 @@
 {% from '_formhelpers.html' import render_form %}
 {% from '_flighthelpers.html' import render_back_office_planes %}
 
-{% block menu %}
-    {% if id_flight %}
-        <li><a href="{{ url_for('back_office_home') }}">ceny biletow</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block content %}
 
     {{ render_form(form, action_text='zapisz', class_='col-lg-4 pull-right', btn_class='btn btn-success') }}
