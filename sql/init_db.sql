@@ -337,6 +337,8 @@ NOT DEFERRABLE;
 
 
 
+
+
 INSERT INTO slownik (id_slownik, zbior, element) VALUES
     (1, 'user', 'klient'), (2, 'user', 'pracownik'), (3, 'user', 'admin'),
     (4, 'klasa', 'economy'), (5, 'klasa', 'business');
@@ -344,53 +346,6 @@ INSERT INTO slownik (id_slownik, zbior, element) VALUES
 INSERT INTO uzytkownik (id_uzytkownik, id_ranga, email, haslo, id_dane_osobowe) VALUES 
     (1, 1, 'user@user.pl', 'password', null),
     (2, 3, 'admin@admin.pl', 'password', null);
-
-INSERT INTO adres (kraj, miasto, ulica, nr, nr_mieszkania, kod_pocztowy) VALUES      
-    ('test kraj', 'test miasto', 'test ulica', 'numer', 'nr_nr', '31-431');
-
-INSERT INTO lotnisko (nazwa, id_adres) VALUES 
-    ('Krakow-Balice', 1), ('Girona-Barcelona', 1), ('Warszawa-Chopin', 1);
-    
-INSERT INTO samolot (producent, model) VALUES 
-    ('Producent Samolotu', 'model samolotu');
-    
-INSERT INTO lot (nr_lot, id_lotnisko_wylot, id_lotnisko_przylot, data_wylot, data_przylot, id_samolot) VALUES
-    ('E123', 1, 2, '2017-01-28 10:20', '2017-01-28 14:20', 1),
-    ('E124', 1, 3, '2017-01-27 9:20', '2017-01-27 10:20', 1),
-    ('E125', 1, 2, '2017-01-30 10:20', '2017-01-30 14:20', 1),
-    ('E125', 1, 2, '2017-01-29 10:20', '2017-01-29 14:20', 1),
-    ('E125', 1, 2, '2017-01-31 10:20', '2017-01-31 14:20', 1),
-    ('E122', 2, 3, '2017-01-28 10:20', '2017-01-28 14:20', 1);
-    
-INSERT INTO samolot_miejsca (id_slownik, id_samolot, ilosc) VALUES
-    (4, 1, 100), (5, 1, 15);
-
-INSERT INTO lot_miejsca (id_lot, id_klasa, ilosc) VALUES 
-    (3, 4, 100), (3, 5, 20), 
-    (6, 4, 5), (6, 5, 1);
-    
-INSERT INTO bilet_cennik (id_lot, id_klasa, cena, ilosc, kupione, data_od, data_do) VALUES
-    (3, 4, 200, 10, 5, '2016-12-28', '2017-01-20'),
-    (3, 4, 150, 10, 9, '2016-12-28', '2017-01-20'),
-    (3, 4, 1000, 1000, 10, '2016-12-20', '2017-01-10'),
-    (3, 5, 1000, 10, 9, '2016-12-28', '2017-12-31'),
-    (3, 5, 4000, 10, 8, '2016-12-20', '2017-01-10'), 
-    (6, 4, 150, 10, 0, '2016-12-28', '2017-12-28'),
-    (6, 4, 190, 10, 9, '2016-12-28', '2017-12-29'),
-    (6, 4, 200, 10, 9, '2016-12-28', '2017-12-31'),
-    (6, 5, 200, 10, 9, '2016-12-28', '2017-12-31'),
-    (6, 4, 200, 10, 2, '2016-12-28', '2017-01-02'),
-    (6, 4, 300, 10, 0, '2016-12-29', '2017-01-10'),
-    (6, 4, 800, 10, 0, '2016-12-26', '2017-01-28');
-    
-INSERT INTO bilet_cennik (id_lot, id_klasa, cena, ilosc, kupione, data_od, data_do, dostepny) VALUES
-    (6, 4, 800, 10, 0, '2016-12-26', '2017-01-31', 0);
-    
-INSERT INTO dane_osobowe (nr_osoba, imie, nazwisko, data_urodzenia, narodowosc, id_adres) VALUES
-    ('21312asdas', 'Michal', 'Kuklewski', '1994-04-05', 'Polska', 1);
-    
-INSERT INTO uzytkownik (id_uzytkownik, id_ranga, email, haslo, id_dane_osobowe) VALUES
-    (-1, 1, 'email@gmail.com', 'blelele', null);
     
     
     
