@@ -2,6 +2,10 @@
 {% from '_formhelpers.html' import render_field %}
 {% from '_flighthelpers.html' import render_list %}
 
+{% block title %}
+    szukaj lotów
+{% endblock %}
+
 {% block content %}
 
 
@@ -25,9 +29,9 @@
 
 
     <div class="pull-right col-lg-8">
-        {{ render_list(flights, 'Na ten dzień', 'Brak lotów') }}
-        {{ render_list(prev_flights, 'Wcześniejsze loty (7 dni)', 'Brak lotów') }}
-        {{ render_list(next_flights, 'Późniejsze loty (7 dni)', 'Brak lotów') }}
+        {{ render_list(flights, 'na ten dzień', 'brak lotów') }}
+        {{ render_list(prev_flights, 'wcześniejsze loty (7 dni)', 'brak lotów') }}
+        {{ render_list(next_flights, 'późniejsze loty (7 dni)', 'brak lotów') }}
     </div>
 
 

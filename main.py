@@ -80,10 +80,10 @@ def book_ticket(id_flight):
     return render_template('customer_views/book_ticket.html', form=form)
 
 
-@app.route('/my_tickets/<int:id_personal_data>/<int:id_price>', methods=['GET', 'POST'])
+@app.route('/my_tickets/<int:id_price>', methods=['GET', 'POST'])
 @app.route('/my_tickets/', methods=['GET', 'POST'])
 @login_required
-def my_tickets(id_personal_data=None, id_price=None):
+def my_tickets(id_price=None):
     future_tickets, past_tickets = select_user_tickets(int(session['user_id']))
     return render_template('customer_views/my_tickets.html', future_tickets=future_tickets, past_tickets=past_tickets)
 

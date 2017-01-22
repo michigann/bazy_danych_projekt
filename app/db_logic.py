@@ -58,7 +58,7 @@ def select_user_tickets(id_user):
         'id_uzytkownik': id_user
     }
     query = ' SELECT * FROM kupione_bilety WHERE id_uzytkownik=:id_uzytkownik ' \
-            ' AND data_wylot {} CURRENT_TIMESTAMP ORDER BY data_wylot DESC '
+            ' AND data_wylot {} CURRENT_TIMESTAMP ORDER BY data_wylot '
     future_flights = raw_query(query.format('>'), args).fetchall()
     past_flights = raw_query(query.format('<='), args).fetchall()
     return future_flights, past_flights

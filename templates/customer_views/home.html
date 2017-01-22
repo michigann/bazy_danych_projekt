@@ -1,6 +1,10 @@
 {% extends 'customer_views/base.html' %}
 {% from '_flighthelpers.html' import render_list %}
 
+{% block title %}
+    strona główna
+{% endblock %}
+
 {% block content %}
-     {{ render_list(flights, 'Najtańsze loty', 'Brak lotów') }}
+     {{ render_list(flights, 'najtańsze loty', 'brak lotów') }}
 {% endblock %}

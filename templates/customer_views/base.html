@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} {% endblock %}</title>
+    <title>Fly High - {% block title %} {% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap.min.css') }}" >
     <script src="{{ url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js') }}"></script>
 
@@ -16,18 +16,21 @@
 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
-        <div class="navbar-header"> <a class="navbar-brand" href="{{ url_for('home') }}">WebSiteName</a> </div>
+        <div class="navbar-header"> <a class="navbar-brand" href="{{ url_for('home') }}">Fly High</a> </div>
         <ul class="nav navbar-nav">
+            {% if current_user and current_user.is_admin %}
+                <li><a href="{{ url_for('back_office_home') }}">backoffice</a></li>
+            {% endif %}
             <li><a href="{{ url_for('home') }}">strona główna</a></li>
             <li><a href="{{ url_for('search_flight') }}">szukaj lotów</a></li>
             <li><a href="{{ url_for('my_tickets') }}">kupione bilety</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-in"></span> Wyloguj </a></li>
+                <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-in"></span> wyloguj </a></li>
             {% else %}
-                <li><a href="{{ url_for('register') }}"><span class="glyphicon glyphicon-user"></span> Zarejestruj się </a></li>
-                <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Zaloguj </a></li>
+                <li><a href="{{ url_for('register') }}"><span class="glyphicon glyphicon-user"></span> zarejestruj się </a></li>
+                <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> zaloguj </a></li>
             {% endif %}
         </ul>
     </div>

@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} {% endblock %}</title>
+    <title>Fly High - backoffice</title>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap.min.css') }}" >
     <script src="{{ url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js') }}"></script>
@@ -13,8 +13,9 @@
 
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
-        <div class="navbar-header"> <a class="navbar-brand" href="{{ url_for('back_office_home') }}">backoffice</a> </div>
+        <div class="navbar-header"> <a class="navbar-brand" href="{{ url_for('back_office_home') }}">Fly High - backoffice</a> </div>
         <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('home') }}">strona główna</a></li>
             <li><a href="{{ url_for('airports') }}">lotniska</a></li>
             <li><a href="{{ url_for('planes') }}">samoloty</a></li>
             <li><a href="{{ url_for('flights') }}">loty</a></li>
@@ -28,9 +29,9 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
             {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-in"></span> Wyloguj </a></li>
+                <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-in"></span> wyloguj </a></li>
             {% else %}
-                <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Zaloguj </a></li>
+                <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> zaloguj </a></li>
             {% endif %}
         </ul>
     </div>

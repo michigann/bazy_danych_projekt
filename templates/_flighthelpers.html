@@ -1,7 +1,9 @@
 {% macro render_list(flights, title_label, empty_label) -%}
     {% if flights %}
     <div class="list-group">
-        {{ title_label }}
+        <div class="page-header">
+            <h4>{{ title_label }}</h4>
+        </div>
         {% for flight in flights %}
             <a href="{{ url_for('book_ticket', id_flight=flight[0]) }}" class="list-group-item">
                 <span class="badge">{{ flight[6] }} zł</span>

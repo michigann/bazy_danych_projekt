@@ -56,9 +56,9 @@ class LoginForm(Form):
 
 
 class SearchForm(Form):
-    airport_from = StringField('from')
-    airport_to = StringField('to')
-    departure_date = DateField('departure', format='%Y-%m-%d')
+    airport_from = StringField('lotnisko wylotu')
+    airport_to = StringField('lotnisko przylotu')
+    departure_date = DateField('data wylotu', format='%Y-%m-%d')
 
 
 class AddressForm(Form):
