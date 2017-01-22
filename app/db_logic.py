@@ -97,7 +97,7 @@ def select_price_list(flight_id, class_id):
 def generate_report(report):
     if report != 'day' and report != 'week' and report != 'month' and report != 'year':
         return None
-    query = " SELECT to_char(date_trunc('{}', data_zakupu), 'YYYY-MM-DD', COUNT(*) AS ilosc, SUM(bc.cena) AS dochod, AVG(bc.cena) AS srednia_cena " \
+    query = " SELECT to_char(date_trunc('{}', data_zakupu)), 'YYYY-MM-DD', COUNT(*) AS ilosc, SUM(bc.cena) AS dochod, AVG(bc.cena) AS srednia_cena " \
             " FROM bilet_cennik AS bc INNER JOIN bilet_osoba AS bo ON bo.id_bilet_cennik=bc.id_bilet_cennik " \
             " GROUP BY CUBE (date_trunc('{}', data_zakupu)) ORDER BY date_trunc('{}', data_zakupu) ".format(report)
     return raw_query(query)
