@@ -6,10 +6,10 @@
 
     {% if report_list %}
         <ul class="list-inline">
-            <li class="{{ item_class }}"> data </li>
-            <li class="{{ item_class }}"> sprzedane </li>
-            <li class="{{ item_class }}"> dochód </li>
-            <li class="{{ item_class }}"> średnia cena </li>
+            <li class="{{ item_class }} list-group-item-action active"> data </li>
+            <li class="{{ item_class }} list-group-item-action active"> sprzedane </li>
+            <li class="{{ item_class }} list-group-item-action active"> dochód </li>
+            <li class="{{ item_class }} list-group-item-action active"> średnia cena </li>
         </ul>
 
         {% for report in report_list %}
