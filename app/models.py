@@ -205,7 +205,6 @@ class Flight(object):
                     ' id_lotnisko_przylot=:id_airport_to, data_wylot=:date_from, data_przylot=:date_to, id_samolot=:id_plane' \
                     ' WHERE id_lot=:id_flight RETURNING id_lot '
         args = self.__dict__
-        print args
         id_flight = get_db_engine().execute(text(query), **args).fetchone()[0]
         return Flight.get(id_flight)
 

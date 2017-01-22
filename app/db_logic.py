@@ -124,7 +124,6 @@ def buy_ticket(book_ticket_form):
     personal_data.nationality = book_ticket_form.nationality.data
     personal_data.id_address = id_address
     id_personal_data = PersonalData.new(personal_data).id_personal_data
-    print "ssssss", list(book_ticket_form.choose_ticket.data)
 
     id_ticket_price = int(book_ticket_form.choose_ticket.data[0])
     id_user = int(current_user.get_id())

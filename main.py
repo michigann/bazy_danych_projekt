@@ -233,7 +233,6 @@ def price_list(id_flight=None):
         'all_prices': all_prices,
         'all_flights': all_flights
     }
-    print args
     return render_template('back_office_views/price_list.html', **args)
 
 
