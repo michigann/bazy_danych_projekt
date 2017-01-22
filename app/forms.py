@@ -204,7 +204,7 @@ class PriceForm(Form):
     price = IntegerField('cena', [validators.DataRequired()])
     amount = IntegerField('ilosc', [validators.DataRequired()])
     date_from = DateField('data od', [validators.DataRequired()])
-    date_to = DateField('data od', [validators.DataRequired()])
+    date_to = DateField('data do', [validators.DataRequired()])
     available = BooleanField('dostepny', default=True)
 
     def validate(self):

@@ -144,7 +144,7 @@ EXECUTE PROCEDURE walidacja_lotu();
 
 CREATE OR REPLACE FUNCTION walidacja_bilet_cennik() RETURNS TRIGGER AS $$
     BEGIN
-        IF NEW.data_wylot > NEW.data_przylot THEN
+        IF NEW.data_od > NEW.data_do THEN
             RAISE 'data_od > data_do';
         END IF;
         RETURN NEW;
