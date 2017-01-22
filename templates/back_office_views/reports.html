@@ -11,14 +11,16 @@
         <a href="{{ url_for('reports', report='year') }}" class="list-group-item">roczny</a>
     </div>
 
-    {% for report in report_list %}
-        <ul class="list-inline">
-            <li class="list-group-item"> {{ report[0] }} </li>
-            <li class="list-group-item"> {{ report[1] }} </li>
-            <li class="list-group-item"> {{ report[2] }} </li>
-            <li class="list-group-item"> {{ report[3] }} </li>
-        </ul>
-    {% endfor %}
+    {% if report_list %}
+        {% for report in report_list %}
+            <ul class="list-inline">
+                <li class="list-group-item"> {{ report[0] }} </li>
+                <li class="list-group-item"> {{ report[1] }} </li>
+                <li class="list-group-item"> {{ report[2] }} </li>
+                <li class="list-group-item"> {{ report[3] }} </li>
+            </ul>
+        {% endfor %}
+    {% endif %}
 
 
 {% endblock %}
