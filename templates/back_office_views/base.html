@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <title>Fly High - backoffice</title>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap.min.css') }}" >
-    <script src="{{ url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/back_office_utlis.js') }}"></script>
+
+
+    {% if config['IS_ON_PASCAL'] %}
+        <link rel="stylesheet" href="http://pascal.fis.agh.edu.pl/~4kuklewski/projekt_bazy/static/bootstrap-3.3.7-dist/css/bootstrap.min.css" >
+        <script src="http://pascal.fis.agh.edu.pl/~4kuklewski/projekt_bazy/static/js/back_office_utlis.js"></script>
+        <script src="http://pascal.fis.agh.edu.pl/~4kuklewski/projekt_bazy/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    {% else %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap.min.css') }}" >
+        <script src="{{ url_for('static', filename='js/back_office_utlis.js') }}"></script>
+        <script src="{{ url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js') }}"></script>
+    {% endif %}
 
 </head>
 <body>

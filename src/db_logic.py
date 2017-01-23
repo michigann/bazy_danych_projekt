@@ -10,7 +10,7 @@ from src.models import Airport, Address, PersonalData, Flight, Plane
 def select_airports(search_string):
     args = {'search_string': '%{}%'.format(search_string)}
     query = 'SELECT id_lotnisko, nazwa FROM lotnisko WHERE nazwa LIKE :search_string '
-    airports = raw_query(query, args)
+    return raw_query(query, args)
 
 
 def select_flights(search_form):

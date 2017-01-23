@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^flyhigh(.*)$ http://pascal.fis.agh.edu.pl/~4kuklewski/cgi-bin/bazy_projekt_cgi.py/$1 [L]

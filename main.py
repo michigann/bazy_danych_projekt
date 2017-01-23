@@ -20,6 +20,7 @@ from src.forms import RegistrationForm, LoginForm, SearchForm, BookTicketForm, F
 from src.models import User, Flight, Airport, Plane, Price
 
 my_app = Flask(__name__)
+my_app.config['IS_ON_PASCAL'] = False
 
 
 @my_app.route('/')
@@ -340,21 +341,20 @@ def reports(report=None):
     return render_template('back_office_views/reports.html', report_list=report_list)
 
 
-if __name__ == '__main__' or __name__ == 'main':
+def init():
     my_app.secret_key = 'super secret key'
     my_app.config['SESSION_TYPE'] = 'filesystem'
-    if __name__ == '__main__':
-        my_app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/postgres'
-    else:
-        my_app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/u4kuklewski'
+    my_app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/u4kuklewski' \
+        if my_app.config['IS_ON_PASCAL'] else 'postgresql://postgres:postgres@localhost/postgres'
     my_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     login_manager = LoginManager()
     login_manager.init_app(my_app)
     login_manager.login_view = 'login'
-
     @login_manager.user_loader
     def load_user(user_id):
         return User.get(user_id)
+init()
 
+if __name__ == '__main__' and not my_app.config['IS_ON_PASCAL']:
     my_app.run()
 
