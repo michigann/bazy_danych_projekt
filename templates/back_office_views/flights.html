@@ -4,12 +4,8 @@
 
 
 {% block content %}
-
-
     {{ render_form(form, action_text='zapisz', class_='col-lg-4 pull-right', btn_class='btn btn-success') }}
-
-    <div class="col-lg-4">
-
+    <div class="col-lg-5">
         {{ render_back_office_flights(flights) }}
     </div>
 {% endblock %}

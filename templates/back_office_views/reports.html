@@ -15,7 +15,7 @@
         {% for report in report_list %}
             <ul class="list-inline">
                 {% for col in report %}
-                    <li class="{{ item_class }}"> {% if col %} {{ col }} {% else %} total {% endif %} </li>
+                    <li class="{{ item_class }}"> {% if col %} {{ col }} {% endif %} </li>
                 {% endfor %}
             </ul>
         {% endfor %}

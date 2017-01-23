@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask, render_template
 from flask import abort
 from flask import redirect
@@ -9,13 +11,13 @@ from flask_login import LoginManager, login_required, logout_user, login_user
 from wtforms import IntegerField
 from wtforms import validators
 
-from app.db_helper import raw_query, get_dictionary_items
-from app.db_logic import select_flights, select_ticket_list, buy_ticket, select_flight_back_office, \
+from src.db_helper import get_dictionary_items
+from src.db_logic import select_flights, select_ticket_list, buy_ticket, select_flight_back_office, \
     select_airport_back_office, select_planes_back_office, select_cheapest_flights, select_price_list, \
-    select_user_tickets, generate_report
-from app.forms import RegistrationForm, LoginForm, SearchForm, BookTicketForm, FlightForm, BackOfficeLoginForm, \
+    select_user_tickets, generate_report, select_airports
+from src.forms import RegistrationForm, LoginForm, SearchForm, BookTicketForm, FlightForm, BackOfficeLoginForm, \
     AirportForm, PlaneForm, PriceForm
-from app.models import User, Flight, Airport, Plane, Price
+from src.models import User, Flight, Airport, Plane, Price
 
 app = Flask(__name__)
 
@@ -23,6 +25,13 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/home/')
 def home():
+    """Strona główna - widok
+
+    Przygotowanie widoków dla strony głównej, wyświetlenie najtańszych lotów
+
+    Returns:
+        wygenerowany szablon html
+    """
     args = {
         'flights': select_cheapest_flights()
     }
@@ -31,6 +40,14 @@ def home():
 
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
+    """Rejestracja - widok
+
+    Przygotowanie formularza rejestracyjnego, walidacja i dodawanie nowego użytkownika
+
+    Returns:
+        wygenerowany szablon html do rejestracji / przekierowanie do formularza logowania jeśli rejestracja
+        przeszła pomyślnie
+    """
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
         User.new(form.email.data, form.password.data)
@@ -40,6 +57,14 @@ def register():
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    """Logowanie - widok
+
+    Formularz logowania, jeśli dane logowania są poprawne logowanie użytkonika przy pomocy sesji
+
+    Returns:
+        wygenerowany szaplon logowania / przekierowanie do strony głównej lub strony z dostępem jedynie dla
+        zalogowanych użytkowników
+    """
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         login_user(form.user)
@@ -50,12 +75,26 @@ def login():
 @app.route("/logout/")
 @login_required
 def logout():
+    """Wylogowanie - widok
+
+    Wylogowywanie obecnie zalogowanego użytkownika
+
+    Returns:
+        przekierowanie do strony głównej
+    """
     logout_user()
     return redirect(url_for('home'))
 
 
 @app.route('/search_flight/', methods=['GET', 'POST'])
 def search_flight():
+    """Wyszukiwanie lotów - widok
+
+    Przygotowanie formularza do wyszukania lotu
+
+    Returns:
+        szablon z formularzem / i lista wyszukanych lotów pasujących do kryterium +-7 dni
+    """
     form = SearchForm(request.form)
     args = {
         'current_user': current_user,
@@ -72,6 +111,16 @@ def search_flight():
 @app.route('/book_ticket/<int:id_flight>/', methods=['GET', 'POST'])
 @login_required
 def book_ticket(id_flight):
+    """Kupowanie biletu - widok
+
+    Przygotowanie formularza kupowania biletu na konkretny lot dla osoby, jeśli formularz jest poprawny oraz
+    miejsca na lot nadal są dostępne następuje kupienie biletu przez zalogowanego użytkownika
+
+    Args:
+        id_flight: numer identyfikacyjny lotu, na który kupowany jest bilet
+    Returns:
+        wygenerowany formularz danych osobowych potrzebnych do zakupu biletu / przekierowanie po zakupie
+    """
     form = BookTicketForm(request.form)
     form.choose_ticket.choices = select_ticket_list(id_flight)
     if request.method == 'POST' and form.validate():
@@ -84,33 +133,58 @@ def book_ticket(id_flight):
 @app.route('/my_tickets/', methods=['GET', 'POST'])
 @login_required
 def my_tickets(id_price=None):
+    """Kupione bilety - widok
+
+    Wyświetla listę lotów, na które kupiliśmy bilety
+
+    Args:
+        id_price: jeśli None wyświetla listę, jeśli wybrany bilet (id) dodatkowo szczegóły
+    Returns:
+        wygenerowany szablon z listą lotów
+    """
     future_tickets, past_tickets = select_user_tickets(int(session['user_id']))
     return render_template('customer_views/my_tickets.html', future_tickets=future_tickets, past_tickets=past_tickets)
 
 
 @app.route('/info/<int:info_id>/')
 def info(info_id):
+    """Kody informacji - widok
+
+    Widok informacyjny zawierający kody informacji, błędów
+
+    Args:
+        info_id: kod informacji
+    Returns:
+        szablon z komunikatem
+    """
     if info_id == 1:
-        msg = 'Przepraszamy! Wystapil problem z zakupem biletu... Sprobuj ponownie pozniej.'
+        msg = 'Przepraszamy! Wystąpił problem z zakupem biletu... Spróbuj ponownie później.'
     elif info_id == 2:
-        msg = 'Dziekujemy za zakup biletu!'
+        msg = 'Dziękujemy za zakup biletu!'
     else:
-        msg = 'Przepraszamy! Wystapil nieznany nam problem...'
+        msg = 'Przepraszamy! Wystąpił nieznany nam problem...'
     return render_template('customer_views/info.html', msg=msg)
 
 
 @app.route('/search_airport/<search_string>/', methods=['GET', 'POST'])
 def search_airport(search_string):
-    args = {'search_string': '%{}%'.format(search_string)}
-    query = 'SELECT id_lotnisko, nazwa FROM lotnisko WHERE nazwa LIKE :search_string '
-    airports = raw_query(query, args)
-    return render_template('customer_views/search_airport.html', airports=airports)
+    """
+    Wyświetlenie listy pasujących nazw lotnisk do wprowadzonego ciągu znaków
+    :param search_string: ciąg znaków dla szukanego lotniska
+    :return: wygenerowana lista hmtml dla podanego ciągu
+    """
+    selected_airports = select_airports(search_string)
+    return render_template('customer_views/search_airport.html', airports=selected_airports)
 
 
 @app.route('/back_office/')
 @app.route('/back_office/home/')
 @login_required
 def back_office_home():
+    """
+    Strona główa dla panelu administratora, możliwe wyświetlenie dla użytkowników o randze admin
+    :return: wygenerowany szablon strony głównej panelu admina / jeżeli brak uprawnień 403
+    """
     if current_user.is_admin:
         return render_template('back_office_views/base.html')
     return abort(403)
@@ -118,6 +192,10 @@ def back_office_home():
 
 @app.route('/back_office/login/', methods=['GET', 'POST'])
 def back_office_login():
+    """
+    Panel logowania dla administratorów
+    :return: generowanie formularza logowania lub przekierowanie jeśli dane są poprawne do strony głównej panelu
+    """
     form = BackOfficeLoginForm(request.form)
     if request.method == 'POST' and form.validate():
         login_user(form.user)
@@ -129,6 +207,11 @@ def back_office_login():
 @app.route('/back_office/airports/<int:id_airport>/', methods=['GET', 'POST'])
 @login_required
 def airports(id_airport=None):
+    """
+    Widok do wyświetlania listy lotnisk w panelu administracyjnym, pozwalający również na edycję nazwy lotniska
+    :param id_airport: opcjonalny argument (jeśli not None to tryb edycji lotniska)
+    :return: wygenerowany szablon listy lotnisk + formularz dodawania / formularz edycji
+    """
     if not current_user.is_admin:
         return abort(403)
     all_airports = select_airport_back_office()

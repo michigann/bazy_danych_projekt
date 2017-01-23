@@ -2,8 +2,8 @@ from wtforms import Form, StringField, PasswordField, validators, DateField, Int
     BooleanField, FieldList, DateTimeField
 from wtforms.widgets import ListWidget, RadioInput
 
-from app.db_helper import get_dictionary_item_id
-from app.models import User, Airport, Plane
+from src.db_helper import get_dictionary_item_id
+from src.models import User, Airport, Plane
 
 
 class RegistrationForm(Form):

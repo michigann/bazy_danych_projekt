@@ -2,9 +2,15 @@ from flask_login import current_user
 from sqlalchemy import text
 from sqlalchemy.engine import ResultProxy
 
-from app.db_helper import raw_query, get_dictionary_items, get_dictionary_item_id, get_db, get_db_engine
-from app.forms import BookTicketForm, FlightForm
-from app.models import Airport, Address, PersonalData, Flight, Plane
+from src.db_helper import raw_query, get_dictionary_items, get_dictionary_item_id, get_db, get_db_engine
+from src.forms import BookTicketForm, FlightForm
+from src.models import Airport, Address, PersonalData, Flight, Plane
+
+
+def select_airports(search_string):
+    args = {'search_string': '%{}%'.format(search_string)}
+    query = 'SELECT id_lotnisko, nazwa FROM lotnisko WHERE nazwa LIKE :search_string '
+    airports = raw_query(query, args)
 
 
 def select_flights(search_form):
