@@ -19,11 +19,11 @@ from src.forms import RegistrationForm, LoginForm, SearchForm, BookTicketForm, F
     AirportForm, PlaneForm, PriceForm
 from src.models import User, Flight, Airport, Plane, Price
 
-app = Flask(__name__)
+my_app = Flask(__name__)
 
 
-@app.route('/')
-@app.route('/home/')
+@my_app.route('/')
+@my_app.route('/home/')
 def home():
     """Strona główna - widok
 
@@ -38,7 +38,7 @@ def home():
     return render_template('customer_views/home.html', **args)
 
 
-@app.route('/register/', methods=['GET', 'POST'])
+@my_app.route('/register/', methods=['GET', 'POST'])
 def register():
     """Rejestracja - widok
 
@@ -55,7 +55,7 @@ def register():
     return render_template('customer_views/register.html', form=form)
 
 
-@app.route('/login/', methods=['GET', 'POST'])
+@my_app.route('/login/', methods=['GET', 'POST'])
 def login():
     """Logowanie - widok
 
@@ -72,7 +72,7 @@ def login():
     return render_template('customer_views/login.html', form=form)
 
 
-@app.route("/logout/")
+@my_app.route("/logout/")
 @login_required
 def logout():
     """Wylogowanie - widok
@@ -86,7 +86,7 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route('/search_flight/', methods=['GET', 'POST'])
+@my_app.route('/search_flight/', methods=['GET', 'POST'])
 def search_flight():
     """Wyszukiwanie lotów - widok
 
@@ -108,7 +108,7 @@ def search_flight():
     return render_template('customer_views/search.html', **args)
 
 
-@app.route('/book_ticket/<int:id_flight>/', methods=['GET', 'POST'])
+@my_app.route('/book_ticket/<int:id_flight>/', methods=['GET', 'POST'])
 @login_required
 def book_ticket(id_flight):
     """Kupowanie biletu - widok
@@ -129,8 +129,8 @@ def book_ticket(id_flight):
     return render_template('customer_views/book_ticket.html', form=form)
 
 
-@app.route('/my_tickets/<int:id_price>', methods=['GET', 'POST'])
-@app.route('/my_tickets/', methods=['GET', 'POST'])
+@my_app.route('/my_tickets/<int:id_price>', methods=['GET', 'POST'])
+@my_app.route('/my_tickets/', methods=['GET', 'POST'])
 @login_required
 def my_tickets(id_price=None):
     """Kupione bilety - widok
@@ -146,7 +146,7 @@ def my_tickets(id_price=None):
     return render_template('customer_views/my_tickets.html', future_tickets=future_tickets, past_tickets=past_tickets)
 
 
-@app.route('/info/<int:info_id>/')
+@my_app.route('/info/<int:info_id>/')
 def info(info_id):
     """Kody informacji - widok
 
@@ -166,7 +166,7 @@ def info(info_id):
     return render_template('customer_views/info.html', msg=msg)
 
 
-@app.route('/search_airport/<search_string>/', methods=['GET', 'POST'])
+@my_app.route('/search_airport/<search_string>/', methods=['GET', 'POST'])
 def search_airport(search_string):
     """
     Wyświetlenie listy pasujących nazw lotnisk do wprowadzonego ciągu znaków
@@ -177,8 +177,8 @@ def search_airport(search_string):
     return render_template('customer_views/search_airport.html', airports=selected_airports)
 
 
-@app.route('/back_office/')
-@app.route('/back_office/home/')
+@my_app.route('/back_office/')
+@my_app.route('/back_office/home/')
 @login_required
 def back_office_home():
     """
@@ -190,7 +190,7 @@ def back_office_home():
     return abort(403)
 
 
-@app.route('/back_office/login/', methods=['GET', 'POST'])
+@my_app.route('/back_office/login/', methods=['GET', 'POST'])
 def back_office_login():
     """
     Panel logowania dla administratorów
@@ -203,8 +203,8 @@ def back_office_login():
     return render_template('back_office_views/login.html', form=form)
 
 
-@app.route('/back_office/airports/', methods=['GET', 'POST'])
-@app.route('/back_office/airports/<int:id_airport>/', methods=['GET', 'POST'])
+@my_app.route('/back_office/airports/', methods=['GET', 'POST'])
+@my_app.route('/back_office/airports/<int:id_airport>/', methods=['GET', 'POST'])
 @login_required
 def airports(id_airport=None):
     """
@@ -230,7 +230,7 @@ def airports(id_airport=None):
     return render_template('back_office_views/airports.html', form=form, airports=all_airports, id_airport=id_airport)
 
 
-@app.route('/back_office/planes/', methods=['GET', 'POST'])
+@my_app.route('/back_office/planes/', methods=['GET', 'POST'])
 @login_required
 def planes():
     if not current_user.is_admin:
@@ -254,8 +254,8 @@ def planes():
     return render_template('back_office_views/planes.html', form=form, planes=all_planes)
 
 
-@app.route('/back_office/flights/', methods=['GET', 'POST'])
-@app.route('/back_office/flights/<int:id_flight>/', methods=['GET', 'POST'])
+@my_app.route('/back_office/flights/', methods=['GET', 'POST'])
+@my_app.route('/back_office/flights/<int:id_flight>/', methods=['GET', 'POST'])
 @login_required
 def flights(id_flight=None):
     if not current_user.is_admin:
@@ -281,8 +281,8 @@ def flights(id_flight=None):
     return render_template('back_office_views/flights.html', form=form, flights=all_flights, id_flight=id_flight)
 
 
-@app.route('/back_office/price_list/flights/<int:id_flight>/', methods=['GET', 'POST'])
-@app.route('/back_office/price_list/', methods=['GET', 'POST'])
+@my_app.route('/back_office/price_list/flights/<int:id_flight>/', methods=['GET', 'POST'])
+@my_app.route('/back_office/price_list/', methods=['GET', 'POST'])
 @login_required
 def price_list(id_flight=None):
     if not current_user.is_admin:
@@ -319,7 +319,7 @@ def price_list(id_flight=None):
     return render_template('back_office_views/price_list.html', **args)
 
 
-@app.route('/back_office/price_list/set_available/<int:id_flight>/<int:id_price>/', methods=['GET', 'POST'])
+@my_app.route('/back_office/price_list/set_available/<int:id_flight>/<int:id_price>/', methods=['GET', 'POST'])
 @login_required
 def set_price_available(id_flight, id_price):
     if not current_user.is_admin:
@@ -330,8 +330,8 @@ def set_price_available(id_flight, id_price):
     return redirect(url_for('price_list', id_flight=id_flight))
 
 
-@app.route('/back_office/reports/<string:report>/', methods=['GET', 'POST'])
-@app.route('/back_office/reports/', methods=['GET', 'POST'])
+@my_app.route('/back_office/reports/<string:report>/', methods=['GET', 'POST'])
+@my_app.route('/back_office/reports/', methods=['GET', 'POST'])
 @login_required
 def reports(report=None):
     if not current_user.is_admin:
@@ -341,20 +341,20 @@ def reports(report=None):
 
 
 if __name__ == '__main__' or __name__ == 'main':
-    app.secret_key = 'super secret key'
-    app.config['SESSION_TYPE'] = 'filesystem'
+    my_app.secret_key = 'super secret key'
+    my_app.config['SESSION_TYPE'] = 'filesystem'
     if __name__ == '__main__':
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/postgres'
+        my_app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/postgres'
     else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/u4kuklewski'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        my_app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/u4kuklewski'
+    my_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     login_manager = LoginManager()
-    login_manager.init_app(app)
+    login_manager.init_app(my_app)
     login_manager.login_view = 'login'
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.get(user_id)
 
-    app.run()
+    my_app.run()
 
