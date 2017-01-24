@@ -29,7 +29,7 @@ class RegistrationForm(Form):
 
         user = User.get(email=self.email.data)
         if user is not None:
-            self.email.errors.append('podany adres email jest już uzywany')
+            self.email.errors.append('podany adres email jest juz uzywany')
             return False
 
         return True
