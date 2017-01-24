@@ -64,7 +64,7 @@ $$ LANGUAGE plpgsql;
 -- funckcja obsługująca zakup biletu
 -- jeśli w trakcie zakupu ktoś inny kupił bilet (o danej cenie) lub bilet został oznaczony jako niedostępny
 -- tranzakcja nie zostanie zakończona pomyślnie
--- w takim wypadku funkcja rzuca wyjątek jeśli będy nie wystąpiły zwracane jest 1
+-- w takim wypadku funkcja rzuca wyjątek jeśli będy nie wystąpiły zwracane jest 1 a bilet zostaje kupiony
 CREATE OR REPLACE FUNCTION kup_bilet(_id_dane_osobowe integer, _id_bilet_cennik integer, _id_uzytkownik integer) 
 RETURNS integer as $$
 DECLARE

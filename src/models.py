@@ -83,6 +83,8 @@ class PersonalData(object):
         self.id_address = None
 
     @staticmethod
+
+
     def get(id_personal_data):
         query = ' SELECT id_dane_osobowe, nr_osoba, imie, nazwisko, data_urodzenia, narodowosc, id_adres ' \
                 ' FROM dane_osobowe WHERE id_dane_osobowe=:id_dane_osobowe '

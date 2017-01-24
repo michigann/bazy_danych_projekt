@@ -65,6 +65,21 @@ class SearchForm(Form):
     airport_to = StringField('lotnisko przylotu')
     departure_date = DateField('data wylotu', [validators.DataRequired()], format='%Y-%m-%d')
 
+    def validate(self):
+        if not Form.validate(self):
+            return False
+        if self.airport_from.data == '' and self.airport_to.data == '':
+            self.airport_from.errors.append('podaj miejsce wylotu lub przylotu')
+            self.airport_to.errors.append('podaj miejsce wylotu lub przylotu')
+            return False
+        if self.airport_from.data != '' and Airport.get(name=self.airport_from.data) is None:
+            self.airport_from.errors.append('brak lotniska {}'.format(self.airport_from.data))
+            return False
+        if self.airport_to.data != '' and Airport.get(name=self.airport_to.data) is None:
+            self.airport_to.errors.append('brak lotniska {}'.format(self.airport_to.data))
+            return False
+        return True
+
 
 class AddressForm(Form):
     country = StringField('kraj', [
