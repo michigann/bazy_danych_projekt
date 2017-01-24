@@ -140,6 +140,11 @@ class MultiIntegerField(SelectMultipleField):
 
 class BookTicketForm(PersonalDataForm):
     choose_ticket = MultiRadioField('wybierz bilet', validators=[validators.DataRequired()], coerce=int)
+    card_number = IntegerField('numer', validators=[validators.DataRequired()])
+    card_date = DateField('data waznosci', validators=[validators.DataRequired()])
+    card_cvv = IntegerField('kod cvv', validators=[validators.DataRequired()])
+    card_fname = StringField('imie posiadacza', validators=[validators.DataRequired()])
+    card_lname = StringField('nazwisko posiadacza', validators=[validators.DataRequired()])
 
 
 class BackOfficeLoginForm(LoginForm):

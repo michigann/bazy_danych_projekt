@@ -1,29 +1,46 @@
 {% extends 'customer_views/base.html' %}
 {% from '_formhelpers.html' import render_form, render_field, render_radio_field %}
 
+{% block title %}
+    kup bilet
+{% endblock %}
+
 {% block content %}
-    <form method="POST" action="" role="form" class="center-block col-lg-9">
+    <form method="POST" action="" role="form" class="center-block">
         {{ form.hidden_tag() if form.hidden_tag }}
         {% if caller %}
             {{ caller() }}
         {% else %}
-            <div class="pull-left col-lg-4">
-            {{ render_field(form.personal_number) }}
-            {{ render_field(form.fname) }}
-            {{ render_field(form.lname) }}
-            {{ render_field(form.birth) }}
-            {{ render_field(form.nationality) }}
+            <div class="pull-left col-lg-3">
+                <div class="page-header"> <h5>dane osobowe</h5> </div>
+                {{ render_field(form.personal_number) }}
+                {{ render_field(form.fname) }}
+                {{ render_field(form.lname) }}
+                {{ render_field(form.birth) }}
+                {{ render_field(form.nationality) }}
             </div>
-            <div class="pull-left col-lg-4">
-            {{ render_field(form.country) }}
-            {{ render_field(form.city) }}
-            {{ render_field(form.street) }}
-            {{ render_field(form.street_number) }}
-            {{ render_field(form.flat_number) }}
-            {{ render_field(form.postal_code) }}
+            <div class="pull-left col-lg-3">
+                <div class="page-header"> <h5>adres</h5> </div>
+                {{ render_field(form.country) }}
+                {{ render_field(form.city) }}
+                {{ render_field(form.street) }}
+                {{ render_field(form.street_number) }}
+                {{ render_field(form.flat_number) }}
+                {{ render_field(form.postal_code) }}
             </div>
 
-            <div class="pull-right col-lg-4">
+            <div class="pull-left col-lg-3">
+                <div class="page-header"> <h5>dane karty kredytowej</h5> </div>
+                {{ render_field(form.card_fname) }}
+                {{ render_field(form.card_lname) }}
+                {{ render_field(form.card_number) }}
+                {{ render_field(form.card_cvv) }}
+                {{ render_field(form.card_date) }}
+            </div>
+
+
+            <div class="pull-right col-lg-3">
+                <div class="page-header"> <h5>klasa</h5> </div>
                 {{ render_radio_field(form.choose_ticket) }}
             </div>
 
