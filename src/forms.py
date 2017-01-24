@@ -16,12 +16,12 @@ class RegistrationForm(Form):
         validators.DataRequired(),
         validators.Length(min=6, max=256)
     ])
-    password = PasswordField('hasło', [
+    password = PasswordField('haslo', [
         validators.DataRequired(),
         validators.Length(min=6, max=30),
-        validators.EqualTo('confirm', message='hasła nie pasują do siebie')
+        validators.EqualTo('confirm', message='hasla nie pasuja do siebie')
     ])
-    confirm = PasswordField('powtórz hasło')
+    confirm = PasswordField('powtorz haslo')
 
     def validate(self):
         if not Form.validate(self):
@@ -29,7 +29,7 @@ class RegistrationForm(Form):
 
         user = User.get(email=self.email.data)
         if user is not None:
-            self.email.errors.append('podany adres email jest już używany')
+            self.email.errors.append('podany adres email jest już uzywany')
             return False
 
         return True
@@ -37,7 +37,7 @@ class RegistrationForm(Form):
 
 class LoginForm(Form):
     email = StringField('email', [validators.DataRequired()])
-    password = PasswordField('hasło', [validators.DataRequired()])
+    password = PasswordField('haslo', [validators.DataRequired()])
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -53,7 +53,7 @@ class LoginForm(Form):
             return False
 
         if not user.check_password(self.password.data):
-            self.password.errors.append('podane hasło jest niepoprawne')
+            self.password.errors.append('podane haslo jest niepoprawne')
             return False
 
         self.user = user

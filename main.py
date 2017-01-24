@@ -162,11 +162,11 @@ def info(info_id):
         szablon z komunikatem
     """
     if info_id == 1:
-        msg = 'Przepraszamy! Wystąpił problem z zakupem biletu... Spróbuj ponownie później.'
+        msg = 'Przepraszamy! Wystapil problem z zakupem biletu... Sprobuj ponownie pozniej.'
     elif info_id == 2:
-        msg = 'Dziękujemy za zakup biletu!'
+        msg = 'Dziekujemy za zakup biletu!'
     else:
-        msg = 'Przepraszamy! Wystąpił nieznany nam problem...'
+        msg = 'Przepraszamy! Wystapil nieznany nam problem...'
     return render_template('customer_views/info.html', msg=msg)
 
 

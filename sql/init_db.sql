@@ -343,6 +343,6 @@ INSERT INTO slownik (id_slownik, zbior, element) VALUES
     (4, 'klasa', 'economy'), (5, 'klasa', 'business'),
     (6, 'pracownik', 'pilot'), (7, 'pracownik', 'stewardessa');
 
-INSERT INTO uzytkownik (id_uzytkownik, id_ranga, email, haslo, id_dane_osobowe) VALUES 
-    (1, 1, 'user@user.pl', 'password', null),
-    (2, 3, 'admin@admin.pl', 'password', null);
+INSERT INTO uzytkownik (id_ranga, email, haslo, id_dane_osobowe) VALUES
+    (1, 'user@user.pl', 'password', null),
+    (3, 'admin@admin.pl', 'password', null);
