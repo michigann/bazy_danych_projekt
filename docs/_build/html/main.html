@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>main module &#8212; Fly High 1.0 - dokumentacja</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="Indeks" href="genindex.html" />
+    <link rel="search" title="Szukaj" href="search.html" />
+    <link rel="next" title="src package" href="src.html" />
+    <link rel="prev" title="untitled2" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-main">
+<span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Stały odnośnik do tego nagłówka">¶</a></h1>
+<p>Moduł inicjalizujący aplikację oraz obsługujący widoki skojarzone z url&#8217;ami</p>
+<dl class="function">
+<dt id="main.airports">
+<code class="descclassname">main.</code><code class="descname">airports</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.airports" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>lista lotnisk / edycja</p>
+<p>Widok do wyświetlania listy lotnisk w panelu administracyjnym, pozwalający również na edycję nazwy lotniska
+oraz dodawanie nowych lotnisk</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id_airport: opcjonalny argument (jeśli not None to tryb edycji lotniska)</dd>
+<dt>Returns:</dt>
+<dd>wygenerowany szablon listy lotnisk + formularz dodawania / formularz edycji
+jeżeli brak uprawnień 403</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.back_office_home">
+<code class="descclassname">main.</code><code class="descname">back_office_home</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.back_office_home" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>admin - główna</p>
+<p>Strona główa dla panelu administratora, możliwe wyświetlenie dla użytkowników o randze admin</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>wygenerowany szablon strony głównej panelu admina
+jeżeli brak uprawnień 403</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.back_office_login">
+<code class="descclassname">main.</code><code class="descname">back_office_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.back_office_login" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>admin - logowanie</p>
+<p>Panel logowania dla administratorów</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>generowanie formularza logowania lub przekierowanie jeśli dane są poprawne do strony głównej panelu</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.book_ticket">
+<code class="descclassname">main.</code><code class="descname">book_ticket</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.book_ticket" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Kupowanie biletu - widok</p>
+<p>Przygotowanie formularza kupowania biletu na konkretny lot dla osoby, jeśli formularz jest poprawny oraz
+miejsca na lot nadal są dostępne następuje kupienie biletu przez zalogowanego użytkownika</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id_flight: numer identyfikacyjny lotu, na który kupowany jest bilet</dd>
+<dt>Returns:</dt>
+<dd>wygenerowany formularz danych osobowych potrzebnych do zakupu biletu / przekierowanie po zakupie</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.flights">
+<code class="descclassname">main.</code><code class="descname">flights</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.flights" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>lista lotów / edycja lotu</p>
+<p>Widok do wyświetlania listę zdefiniowanych lotów w panelu administracyjnym,
+pozwalający również na definiowanie nowych lotów oraz ich edycję</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id_flight: opcjonalny argument (jeśli not None to tryb edycji lotu)</dd>
+<dt>Returns:</dt>
+<dd>wygenerowany szablon listy lotów + formularz dodawania / formularz edycji
+jeżeli poprawny formularz zostanie zatwierdzony przez submit (POST) przekiowanie do definiowania cen biletów
+jeżeli brak uprawnień 403</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.home">
+<code class="descclassname">main.</code><code class="descname">home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.home" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Strona główna - widok
+Przygotowanie widoków dla strony głównej, wyświetlenie najtańszych lotów</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>wygenerowany szablon html</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.info">
+<code class="descclassname">main.</code><code class="descname">info</code><span class="sig-paren">(</span><em>info_id</em><span class="sig-paren">)</span><a class="headerlink" href="#main.info" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Kody informacji - widok</p>
+<p>Widok informacyjny zawierający kody informacji, błędów</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>info_id: kod informacji</dd>
+<dt>Returns:</dt>
+<dd>szablon z komunikatem</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.init">
+<code class="descclassname">main.</code><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.init" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Inicjalizacja aplikacji</p>
+<p>Funkcja inicjalizująca aplikację, definiowanie bazy danych, mechanizmu logowania przez sesję itp.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.login">
+<code class="descclassname">main.</code><code class="descname">login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.login" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Logowanie - widok</p>
+<p>Formularz logowania, jeśli dane logowania są poprawne logowanie użytkonika przy pomocy sesji</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>wygenerowany szaplon logowania / przekierowanie do strony głównej lub strony z dostępem jedynie dla
+zalogowanych użytkowników</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.logout">
+<code class="descclassname">main.</code><code class="descname">logout</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.logout" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Wylogowanie - widok</p>
+<p>Wylogowywanie obecnie zalogowanego użytkownika</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>przekierowanie do strony głównej</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.my_tickets">
+<code class="descclassname">main.</code><code class="descname">my_tickets</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.my_tickets" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Kupione bilety - widok</p>
+<p>Wyświetla listę lotów, na które kupiliśmy bilety</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id_price: jeśli None wyświetla listę, jeśli wybrany bilet (id) dodatkowo szczegóły</dd>
+<dt>Returns:</dt>
+<dd>wygenerowany szablon z listą lotów</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.planes">
+<code class="descclassname">main.</code><code class="descname">planes</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.planes" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>lista samolotów / dodawnie nowych</p>
+<p>Widok do wyświetlania listę samolotów w panelu administracyjnym, pozwala również na definiowanie nowych samolotów</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>wygenerowany szablon listy samolotów + formularz dodawania
+jeżeli brak uprawnień 403</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.price_list">
+<code class="descclassname">main.</code><code class="descname">price_list</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.price_list" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>cennik biletów</p>
+<p>Widok wyświetla listę zdefiniowanych cen biletów dla lotu o id_flight, pozwala na dodawanie nowych,
+jeśli lot nie jest wybrany generowana jest lista lotów w celu sprecyzowania dla którego definiujemy ceny</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id_flight: opcjonalny argument (jeśli not None to wybór lotu)</dd>
+<dt>Returns:</dt>
+<dd>wygenerowany szablon listy lotów + formularz dodawania / formularz edycji
+jeżeli poprawny formularz zostanie zatwierdzony przez submit (POST) przekiowanie do definiowania cen biletów
+jeżeli brak uprawnień 403</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.register">
+<code class="descclassname">main.</code><code class="descname">register</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.register" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Rejestracja - widok</p>
+<p>Przygotowanie formularza rejestracyjnego, walidacja i dodawanie nowego użytkownika</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>wygenerowany szablon html do rejestracji / przekierowanie do formularza logowania jeśli rejestracja
+przeszła pomyślnie</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.reports">
+<code class="descclassname">main.</code><code class="descname">reports</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.reports" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>generator raportów</p>
+<p>Widok generujący raporty sprzedaży biletów (data, ilość, dochód, średnia cena)
+generowane raporty - dzienne, tygodniowe, miesięczne, roczne</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>report: obsługiwany zbiór (day, week, month, year), jeśli None generowana jest lista wyboru raportu</dd>
+<dt>Returns:</dt>
+<dd>lista wyboru raportów / raport
+jeżeli brak uprawnień 403</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.search_airport">
+<code class="descclassname">main.</code><code class="descname">search_airport</code><span class="sig-paren">(</span><em>search_string</em><span class="sig-paren">)</span><a class="headerlink" href="#main.search_airport" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Podpowiedzi lotnisk</p>
+<p>Wyświetlenie listy pasujących nazw lotnisk do wprowadzonego ciągu znaków</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>search_string: ciąg znaków dla szukanego lotniska</dd>
+<dt>Returns:</dt>
+<dd>wygenerowana lista hmtml dla podanego ciągu</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.search_flight">
+<code class="descclassname">main.</code><code class="descname">search_flight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.search_flight" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>Wyszukiwanie lotów - widok</p>
+<p>Przygotowanie formularza do wyszukania lotu</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>szablon z formularzem / i lista wyszukanych lotów pasujących do kryterium +-7 dni</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="main.set_price_available">
+<code class="descclassname">main.</code><code class="descname">set_price_available</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#main.set_price_available" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>zmiana dostępności biletu</p>
+<p>Zmiana dostępności biletu na liście cen biletów</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id_flight: numer identyfikacyjny lotu
+id_price: numer identyfikacyjny ceny, której dostępność jest zmieniana</dd>
+<dt>Returns:</dt>
+<dd>przekierowanie do cennika
+jeżeli brak uprawnień 403</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">untitled2</a><ul>
+      <li>Previous: <a href="modules.html" title="poprzedni rozdział">untitled2</a></li>
+      <li>Next: <a href="src.html" title="następny rozdział">src package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Ta strona</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/main.rst.txt"
+            rel="nofollow">Pokaż źródło</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Szybkie wyszukiwanie</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Szukaj" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michał Kuklewski.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/main.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
