@@ -10,6 +10,8 @@ DROP FUNCTION lot_miejsca_dodaj();
 
 
 
+
+-- funkcja pozwalająca na wyszukanie najniższej ceny dla danego lotu
 CREATE OR REPLACE FUNCTION najnizsza_cena(_id_lot integer) RETURNS INTEGER AS $$
 BEGIN
     RETURN (SELECT cena
@@ -28,7 +30,8 @@ $$ LANGUAGE plpgsql;
 
 
 
-
+-- funkcja zwracająca informacje o obecnej cenie dla danego lotu w danej klasie
+-- informacjami tymi są (id_bilet_cennik, cena, ilość dostępnych biletów w tej cenie)
 CREATE OR REPLACE FUNCTION obecna_cena(_id_lot integer, _id_klasa integer)
 RETURNS TABLE (
     _id_bilet_cennik integer,
@@ -58,7 +61,10 @@ $$ LANGUAGE plpgsql;
 
 
 
-
+-- funckcja obsługująca zakup biletu
+-- jeśli w trakcie zakupu ktoś inny kupił bilet (o danej cenie) lub bilet został oznaczony jako niedostępny
+-- tranzakcja nie zostanie zakończona pomyślnie
+-- w takim wypadku funkcja rzuca wyjątek jeśli będy nie wystąpiły zwracane jest 1
 CREATE OR REPLACE FUNCTION kup_bilet(_id_dane_osobowe integer, _id_bilet_cennik integer, _id_uzytkownik integer) 
 RETURNS integer as $$
 DECLARE
@@ -101,7 +107,8 @@ $$ LANGUAGE plpgsql;
 
 
 
-
+-- funkcja dodająca dostępne miejsca dla lotu na podstawie zdefiniowanego dla niego samolotu
+-- po dodaniu lotu do tabeli lot wyzwalana jest ta funkcja w celu ustawienia ilości miejsc w danych klasach
 CREATE OR REPLACE FUNCTION lot_miejsca_dodaj() RETURNS TRIGGER AS $$
     BEGIN
         INSERT INTO lot_miejsca (id_lot, id_klasa, ilosc)
@@ -118,7 +125,7 @@ EXECUTE PROCEDURE lot_miejsca_dodaj();
 
 
 
-
+-- wyzwalacz walidacyjny dla lotu (data wylotu, przylotu oraz lotnisko wylotu, przylotu)
 CREATE OR REPLACE FUNCTION walidacja_lotu() RETURNS TRIGGER AS $$
     BEGIN
         IF NEW.data_wylot >= NEW.data_przylot THEN
@@ -141,7 +148,7 @@ EXECUTE PROCEDURE walidacja_lotu();
 
 
 
-
+-- wyzwalacz walidacyjny dla tabeli bilet_cennik (data od, data do)
 CREATE OR REPLACE FUNCTION walidacja_bilet_cennik() RETURNS TRIGGER AS $$
     BEGIN
         IF NEW.data_od > NEW.data_do THEN

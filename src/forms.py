@@ -1,22 +1,27 @@
-from wtforms import Form, StringField, PasswordField, validators, DateField, IntegerField, SelectMultipleField, \
-    BooleanField, FieldList, DateTimeField
-from wtforms.widgets import ListWidget, RadioInput
+# -*- coding: utf-8 -*-
 
+"""
+Formularze obsługi danych wprowadznych przez użytkowników (klientów i administratorów)
+"""
+
+from wtforms import Form, StringField, PasswordField, validators, DateField, IntegerField, SelectMultipleField, \
+    BooleanField, DateTimeField
+from wtforms.widgets import ListWidget, RadioInput
 from src.db_helper import get_dictionary_item_id
 from src.models import User, Airport, Plane
 
 
 class RegistrationForm(Form):
-    email = StringField('email', [
+    email = StringField('adres email', [
         validators.DataRequired(),
         validators.Length(min=6, max=256)
     ])
-    password = PasswordField('new password', [
+    password = PasswordField('hasło', [
         validators.DataRequired(),
         validators.Length(min=6, max=30),
-        validators.EqualTo('confirm', message='Passwords must match')
+        validators.EqualTo('confirm', message='hasła nie pasują do siebie')
     ])
-    confirm = PasswordField('repeat password')
+    confirm = PasswordField('powtórz hasło')
 
     def validate(self):
         if not Form.validate(self):
@@ -24,7 +29,7 @@ class RegistrationForm(Form):
 
         user = User.get(email=self.email.data)
         if user is not None:
-            self.email.errors.append('email address in usage')
+            self.email.errors.append('podany adres email jest już używany')
             return False
 
         return True
@@ -32,7 +37,7 @@ class RegistrationForm(Form):
 
 class LoginForm(Form):
     email = StringField('email', [validators.DataRequired()])
-    password = PasswordField('password', [validators.DataRequired()])
+    password = PasswordField('hasło', [validators.DataRequired()])
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -44,11 +49,11 @@ class LoginForm(Form):
 
         user = User.get(email=self.email.data)
         if user is None:
-            self.email.errors.append('wrong email address')
+            self.email.errors.append('podany email jest niepoprawny')
             return False
 
         if not user.check_password(self.password.data):
-            self.password.errors.append('invalid password')
+            self.password.errors.append('podane hasło jest niepoprawne')
             return False
 
         self.user = user
@@ -58,7 +63,7 @@ class LoginForm(Form):
 class SearchForm(Form):
     airport_from = StringField('lotnisko wylotu')
     airport_to = StringField('lotnisko przylotu')
-    departure_date = DateField('data wylotu', format='%Y-%m-%d')
+    departure_date = DateField('data wylotu', [validators.DataRequired()], format='%Y-%m-%d')
 
 
 class AddressForm(Form):

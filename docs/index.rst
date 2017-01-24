@@ -12,7 +12,7 @@ Welcome to Fly High's documentation!
 
    modules.rst
    main.rst 
-   app.rst
+   src.rst
 
 
 Indices and tables

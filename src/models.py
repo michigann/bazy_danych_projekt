@@ -1,7 +1,13 @@
+# -*- coding: utf-8 -*-
+
+"""
+Modele przedstawiające obiekty bazodanowe oraz pozwalające na przetwarzanie formularzy im odpowiadającym
+"""
+
 from flask_login import UserMixin
 from sqlalchemy import text
 
-from db_helper import get_dictionary_items, get_db, get_dictionary_item_id, raw_query, get_db_engine
+from db_helper import get_dictionary_items, get_dictionary_item_id, get_db_engine
 
 
 class User(UserMixin):

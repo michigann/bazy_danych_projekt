@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+Moduł inicjalizujący aplikację oraz obsługujący widoki skojarzone z url'ami
+"""
+
 from flask import Flask, render_template
 from flask import abort
 from flask import redirect
@@ -27,7 +31,6 @@ my_app.config['IS_ON_PASCAL'] = False
 @my_app.route('/home/')
 def home():
     """Strona główna - widok
-
     Przygotowanie widoków dla strony głównej, wyświetlenie najtańszych lotów
 
     Returns:
@@ -169,10 +172,14 @@ def info(info_id):
 
 @my_app.route('/search_airport/<search_string>/', methods=['GET', 'POST'])
 def search_airport(search_string):
-    """
+    """Podpowiedzi lotnisk
+
     Wyświetlenie listy pasujących nazw lotnisk do wprowadzonego ciągu znaków
-    :param search_string: ciąg znaków dla szukanego lotniska
-    :return: wygenerowana lista hmtml dla podanego ciągu
+
+    Args:
+        search_string: ciąg znaków dla szukanego lotniska
+    Returns:
+        wygenerowana lista hmtml dla podanego ciągu
     """
     selected_airports = select_airports(search_string)
     return render_template('customer_views/search_airport.html', airports=selected_airports)
@@ -182,9 +189,13 @@ def search_airport(search_string):
 @my_app.route('/back_office/home/')
 @login_required
 def back_office_home():
-    """
+    """admin - główna
+
     Strona główa dla panelu administratora, możliwe wyświetlenie dla użytkowników o randze admin
-    :return: wygenerowany szablon strony głównej panelu admina / jeżeli brak uprawnień 403
+
+    Returns:
+        wygenerowany szablon strony głównej panelu admina
+        jeżeli brak uprawnień 403
     """
     if current_user.is_admin:
         return render_template('back_office_views/base.html')
@@ -193,9 +204,12 @@ def back_office_home():
 
 @my_app.route('/back_office/login/', methods=['GET', 'POST'])
 def back_office_login():
-    """
+    """admin - logowanie
+
     Panel logowania dla administratorów
-    :return: generowanie formularza logowania lub przekierowanie jeśli dane są poprawne do strony głównej panelu
+
+    Returns:
+        generowanie formularza logowania lub przekierowanie jeśli dane są poprawne do strony głównej panelu
     """
     form = BackOfficeLoginForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -208,10 +222,16 @@ def back_office_login():
 @my_app.route('/back_office/airports/<int:id_airport>/', methods=['GET', 'POST'])
 @login_required
 def airports(id_airport=None):
-    """
+    """lista lotnisk / edycja
+
     Widok do wyświetlania listy lotnisk w panelu administracyjnym, pozwalający również na edycję nazwy lotniska
-    :param id_airport: opcjonalny argument (jeśli not None to tryb edycji lotniska)
-    :return: wygenerowany szablon listy lotnisk + formularz dodawania / formularz edycji
+    oraz dodawanie nowych lotnisk
+
+    Args:
+        id_airport: opcjonalny argument (jeśli not None to tryb edycji lotniska)
+    Returns:
+        wygenerowany szablon listy lotnisk + formularz dodawania / formularz edycji
+        jeżeli brak uprawnień 403
     """
     if not current_user.is_admin:
         return abort(403)
@@ -234,6 +254,14 @@ def airports(id_airport=None):
 @my_app.route('/back_office/planes/', methods=['GET', 'POST'])
 @login_required
 def planes():
+    """lista samolotów / dodawnie nowych
+
+    Widok do wyświetlania listę samolotów w panelu administracyjnym, pozwala również na definiowanie nowych samolotów
+
+    Returns:
+        wygenerowany szablon listy samolotów + formularz dodawania
+        jeżeli brak uprawnień 403
+    """
     if not current_user.is_admin:
         return abort(403)
     all_planes = select_planes_back_office()
@@ -259,6 +287,18 @@ def planes():
 @my_app.route('/back_office/flights/<int:id_flight>/', methods=['GET', 'POST'])
 @login_required
 def flights(id_flight=None):
+    """lista lotów / edycja lotu
+
+    Widok do wyświetlania listę zdefiniowanych lotów w panelu administracyjnym,
+    pozwalający również na definiowanie nowych lotów oraz ich edycję
+
+    Args:
+        id_flight: opcjonalny argument (jeśli not None to tryb edycji lotu)
+    Returns:
+        wygenerowany szablon listy lotów + formularz dodawania / formularz edycji
+        jeżeli poprawny formularz zostanie zatwierdzony przez submit (POST) przekiowanie do definiowania cen biletów
+        jeżeli brak uprawnień 403
+    """
     if not current_user.is_admin:
         return abort(403)
     all_flights = select_flight_back_office()
@@ -286,6 +326,18 @@ def flights(id_flight=None):
 @my_app.route('/back_office/price_list/', methods=['GET', 'POST'])
 @login_required
 def price_list(id_flight=None):
+    """cennik biletów
+
+    Widok wyświetla listę zdefiniowanych cen biletów dla lotu o id_flight, pozwala na dodawanie nowych,
+    jeśli lot nie jest wybrany generowana jest lista lotów w celu sprecyzowania dla którego definiujemy ceny
+
+    Args:
+        id_flight: opcjonalny argument (jeśli not None to wybór lotu)
+    Returns:
+        wygenerowany szablon listy lotów + formularz dodawania / formularz edycji
+        jeżeli poprawny formularz zostanie zatwierdzony przez submit (POST) przekiowanie do definiowania cen biletów
+        jeżeli brak uprawnień 403
+    """
     if not current_user.is_admin:
         return abort(403)
 
@@ -323,6 +375,17 @@ def price_list(id_flight=None):
 @my_app.route('/back_office/price_list/set_available/<int:id_flight>/<int:id_price>/', methods=['GET', 'POST'])
 @login_required
 def set_price_available(id_flight, id_price):
+    """zmiana dostępności biletu
+
+    Zmiana dostępności biletu na liście cen biletów
+
+    Args:
+        id_flight: numer identyfikacyjny lotu
+        id_price: numer identyfikacyjny ceny, której dostępność jest zmieniana
+    Returns:
+        przekierowanie do cennika
+        jeżeli brak uprawnień 403
+    """
     if not current_user.is_admin:
         return abort(403)
     price = Price.get(id_price)
@@ -335,6 +398,17 @@ def set_price_available(id_flight, id_price):
 @my_app.route('/back_office/reports/', methods=['GET', 'POST'])
 @login_required
 def reports(report=None):
+    """generator raportów
+
+    Widok generujący raporty sprzedaży biletów (data, ilość, dochód, średnia cena)
+    generowane raporty - dzienne, tygodniowe, miesięczne, roczne
+
+    Args:
+        report: obsługiwany zbiór (day, week, month, year), jeśli None generowana jest lista wyboru raportu
+    Returns:
+        lista wyboru raportów / raport
+        jeżeli brak uprawnień 403
+    """
     if not current_user.is_admin:
         return abort(403)
     report_list = generate_report(report)
@@ -342,6 +416,10 @@ def reports(report=None):
 
 
 def init():
+    """Inicjalizacja aplikacji
+
+    Funkcja inicjalizująca aplikację, definiowanie bazy danych, mechanizmu logowania przez sesję itp.
+    """
     my_app.secret_key = 'super secret key'
     my_app.config['SESSION_TYPE'] = 'filesystem'
     my_app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u4kuklewski:4kuklewski@localhost/u4kuklewski' \

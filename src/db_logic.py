@@ -1,19 +1,39 @@
-from flask_login import current_user
-from sqlalchemy import text
-from sqlalchemy.engine import ResultProxy
+# -*- coding: utf-8 -*-
 
-from src.db_helper import raw_query, get_dictionary_items, get_dictionary_item_id, get_db, get_db_engine
-from src.forms import BookTicketForm, FlightForm
-from src.models import Airport, Address, PersonalData, Flight, Plane
+"""
+Moduł obsługujący i składający zapytania do bazy danych
+"""
+
+from flask_login import current_user
+from src.db_helper import raw_query, get_dictionary_items, get_db_engine
+from src.forms import BookTicketForm
+from src.models import Airport, Address, PersonalData, Plane
 
 
 def select_airports(search_string):
+    """
+    Wyszukiwanie lotnisk, których nazwa pasuje do danego wzorce
+
+    Args:
+        search_string: wzorzec wyszukiwania
+    Returns:
+        znalezione rekordy
+    """
     args = {'search_string': '%{}%'.format(search_string)}
     query = 'SELECT id_lotnisko, nazwa FROM lotnisko WHERE nazwa LIKE :search_string '
     return raw_query(query, args)
 
 
 def select_flights(search_form):
+    """
+    Obsługa formularza wyszukiwania lotów - składanie zapytania na podstawie wprowadzonych danych przez użytkownika
+    Wymagane dane: lotnisko wylotu lub przylotu, data w każdym przypadku
+
+    Args:
+        search_form: formularz wyszukiwania lotów instancja SearchForm
+    Returns:
+        znalezione rekordy
+    """
     where_airports, where_date = '', ''
     args = dict()
     if search_form.airport_from.data != '':
@@ -45,10 +65,26 @@ def select_flights(search_form):
 
 
 def select_cheapest_flights(limit=10):
+    """
+    Wyszukiwarka najtańszych lotów
+
+    Args:
+        limit: ilość wyszukiwanych lotów
+    Returns:
+        znalezione rekordy
+    """
     return raw_query(' SELECT * FROM loty_klient ORDER BY cena LIMIT {} '.format(limit))
 
 
 def select_ticket_list(id_flight):
+    """
+    Wyszukiwanie listy biletów dla wszystkich klas zdefiniowanych dla lotu
+
+    Args:
+        id_flight: numer identyfikacyjny lotu
+    Returns:
+        znalezione rekordy / pusta lista
+    """
     out = list()
     for name_item, id_item in get_dictionary_items('klasa').iteritems():
         try:
@@ -60,6 +96,14 @@ def select_ticket_list(id_flight):
 
 
 def select_user_tickets(id_user):
+    """
+    Wyszukiwanie listy biletów kupionych przez użytkownika, lista przyszłych lotów oraz już odbytych
+
+    Args:
+        id_user: numer identyfikacyjny użytkownika dla ktróergo są wyszukiwane bilety
+    Returns:
+        znalezione rekordy w postaci krotki dwóch list (przyszłe loty, przeszłe loty)
+    """
     args = {
         'id_uzytkownik': id_user
     }
@@ -71,17 +115,35 @@ def select_user_tickets(id_user):
 
 
 def select_flight_back_office():
+    """
+    Wyszukiwanie listy lotów dla administratora - szczegółowa lista
+
+    Returns:
+        wszystkie loty ze szczegółowymi informacjami
+    """
     query = ' SELECT id_lot, nr_lot, lotnisko_wylot, lotnisko_przylot, data_wylot, data_przylot, id_samolot, ' \
             ' miejsca_wolne, miejsca_wszystkie FROM loty_backoffice '
     return raw_query(query).fetchall()
 
 
 def select_airport_back_office():
+    """
+    Wyszukiwanie listy lotnisk dla administratora - szczegółowa lista
+
+    Returns:
+        wszystkie lotniska ze szczegółowymi informacjami
+    """
     query = ' SELECT id_lotnisko, nazwa, id_adres FROM lotnisko ORDER BY nazwa '
     return raw_query(query).fetchall()
 
 
 def select_planes_back_office():
+    """
+    Wyszukiwanie listy samolotów dla administratora - szczegółowa lista
+
+    Returns:
+        wszystkie samoloty ze szczegółowymi informacjami
+    """
     query = ' SELECT id_samolot FROM samolot ORDER BY producent, samolot '
     select = raw_query(query).fetchall()
     planes = list()
@@ -91,6 +153,15 @@ def select_planes_back_office():
 
 
 def select_price_list(flight_id, class_id):
+    """
+    Wyszukiwanie cenników dla administratora dla zdefiniowanego lotu i klasy (id_slownik)
+
+    Args:
+        flight_id: id lotu (dla którego szukamy cen)
+        class_id: id klasy (dla której szukamy cen)
+    Returns:
+        zbiór
+    """
     query = ' SELECT id_bilet_cennik, id_lot, id_klasa, cena, ilosc, kupione, data_od, data_do, dostepny FROM bilet_cennik ' \
             ' WHERE id_lot=:id_lot AND id_klasa=:id_klasa ORDER BY data_od, data_do '
     args = {
@@ -101,6 +172,15 @@ def select_price_list(flight_id, class_id):
 
 
 def generate_report(report):
+    """
+    Funkcje generująca raporty sprzedażowe dzienne, tygodniowe, miesięczne, roczne przy pomocy kostki
+    w postaci (data, ilość sprzedanych, dochów, śerdnia cena)
+
+    Args:
+        report: string definiujący rodzaj raportu ('day', 'week', 'month', 'year')
+    Returns:
+        wygenerowane raporty sprzedażowe
+    """
     if report != 'day' and report != 'week' and report != 'month' and report != 'year':
         return None
     query = " SELECT date_trunc('{}', data_zakupu), COUNT(*) AS ilosc, SUM(bc.cena) AS dochod, AVG(bc.cena) AS srednia_cena " \
@@ -110,6 +190,15 @@ def generate_report(report):
 
 
 def buy_ticket(book_ticket_form):
+    """
+    Zakup biletu na podstawie danych wprowadzonych w formularzu (dane osobowe, rodzaj biletu) zakupu
+    w tym celu wywoływana jest funkcja zdefiniowana w bazie danych
+
+    Args:
+        book_ticket_form: wypełniony formularz zakupu
+    Returns:
+        rezultat zakupu True / False
+    """
     if not isinstance(book_ticket_form, BookTicketForm):
         return None
 
