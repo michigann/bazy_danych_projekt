@@ -338,7 +338,6 @@ NOT DEFERRABLE;
 
 
 
-
 INSERT INTO slownik (id_slownik, zbior, element) VALUES
     (1, 'user', 'klient'), (2, 'user', 'pracownik'), (3, 'user', 'admin'),
     (4, 'klasa', 'economy'), (5, 'klasa', 'business'),
